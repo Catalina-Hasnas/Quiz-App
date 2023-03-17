@@ -9,7 +9,7 @@ const MainNavigation = () => {
       <nav>
         <ul>
           <li>
-            <Link href="/login">Login</Link>
+            <Link href="/auth">Login</Link>
           </li>
           <li>
             <Link href="/profile">Profile</Link>
