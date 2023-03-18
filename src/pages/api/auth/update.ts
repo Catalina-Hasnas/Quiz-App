@@ -19,9 +19,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<unknown>) {
     newPassword,
   }: { oldPassword: string; newPassword: string } = req.body;
 
-  const token = req?.headers?.authorization;
-
-  //   .split(" ")[1];
+  const token = req?.headers?.authorization?.split(" ")[1];
 
   const decodedToken = await verifyToken(token || "");
 

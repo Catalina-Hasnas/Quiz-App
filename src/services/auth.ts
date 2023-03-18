@@ -1,6 +1,6 @@
 import { hash, compare } from "bcryptjs";
 import jwt, { Secret } from "jsonwebtoken";
-import { IUser } from "./types";
+import { HttpError, ILoginResponse, IUser } from "./types";
 
 export const hashPassword = async (password: string) => {
   const hashedPassword = await hash(password, 12);
@@ -70,10 +70,10 @@ export const loginUser = async (email: string, password: string) => {
     },
   });
 
-  const data = await response.json();
+  const data: ILoginResponse | HttpError = await response.json();
 
   if (!response.ok) {
-    throw new Error(data.message || "Something went wrong!");
+    console.log((data as HttpError).message);
   }
 
   return data;

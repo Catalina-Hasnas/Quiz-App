@@ -1,15 +1,13 @@
 import { User } from "@/models/user";
-import {
-  generateToken,
-  hashPassword,
-  verifyPassword,
-  getToken,
-} from "@/services/auth";
+import { verifyPassword, getToken } from "@/services/auth";
 import { connectToDatabase } from "@/services/database.service";
-import { IUser } from "@/services/types";
+import { HttpError, ILoginResponse, IUser } from "@/services/types";
 import type { NextApiRequest, NextApiResponse } from "next";
 
-async function handler(req: NextApiRequest, res: NextApiResponse<unknown>) {
+async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse<ILoginResponse | HttpError>
+) {
   if (req.method !== "POST") {
     return;
   }
@@ -63,11 +61,13 @@ async function handler(req: NextApiRequest, res: NextApiResponse<unknown>) {
     });
   }
 
-  res.json({
-    id: existingUser?._id,
-    email: existingUser?.email,
-    token: `Bearer ${token}`,
-  });
+  if (existingUser) {
+    res.json({
+      id: existingUser?._id,
+      email: existingUser?.email,
+      token: `Bearer ${token}`,
+    });
+  }
 }
 
 export default handler;

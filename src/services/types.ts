@@ -10,3 +10,11 @@ export interface IUserToken extends JwtPayload {
   id: string;
   email: string;
 }
+
+export interface ILoginResponse {
+  id: string;
+  email: string;
+  token: string;
+}
+
+export type HttpError = { message: string };

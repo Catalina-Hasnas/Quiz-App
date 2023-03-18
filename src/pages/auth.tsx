@@ -1,9 +1,12 @@
 import { createUser, loginUser } from "@/services/auth";
+import { useAuth } from "@/services/providers/AuthProvider";
+import { ILoginResponse } from "@/services/types";
 import { useRouter } from "next/router";
 import { FormEvent, useRef, useState } from "react";
 import classes from "./login.module.css";
 
 const AuthPage = () => {
+  const { login } = useAuth();
   const emailInputRef = useRef<HTMLInputElement>(null);
   const passwordInputRef = useRef<HTMLInputElement>(null);
 
@@ -20,6 +23,8 @@ const AuthPage = () => {
       try {
         const result = await loginUser(enteredEmail, enteredPassword);
         console.log(result);
+
+        login((result as ILoginResponse).id, (result as ILoginResponse).token);
       } catch (error) {
         console.log(error);
       }
@@ -27,7 +32,7 @@ const AuthPage = () => {
     } else {
       try {
         const result = await createUser(enteredEmail, enteredPassword);
-        console.log(result);
+        login((result as ILoginResponse).id, (result as ILoginResponse).token);
       } catch (error) {
         console.log(error);
       }
