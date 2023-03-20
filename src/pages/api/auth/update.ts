@@ -1,12 +1,7 @@
 import { User } from "@/models/user";
-import {
-  generateToken,
-  hashPassword,
-  verifyPassword,
-  verifyToken,
-} from "@/services/auth";
+import { hashPassword, verifyPassword, verifyToken } from "@/services/auth";
 import { connectToDatabase } from "@/services/database.service";
-import { IUser, IUserToken } from "@/services/types";
+import { IUserToken, UserDocument } from "@/services/types";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 async function handler(req: NextApiRequest, res: NextApiResponse<unknown>) {
@@ -25,20 +20,39 @@ async function handler(req: NextApiRequest, res: NextApiResponse<unknown>) {
 
   const userId = (decodedToken as IUserToken).id;
 
+  await connectToDatabase();
+
+  let existingUser: UserDocument | null = null;
   try {
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
-
-    user.password = await hashPassword(newPassword);
-    await user.save();
-
-    res.json({ message: "Password changed successfully" });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Internal server error" });
+    existingUser = await User.findById(userId);
+  } catch (err) {
+    return res.status(500).json({
+      error: {
+        message: "Couldn't update your password." + err,
+      },
+    });
   }
+
+  if (!existingUser) {
+    return res.status(404).json({
+      error:
+        "Couldn't find the user you're trying to change the password too. Please make sure you're logged in and try again.",
+    });
+  }
+
+  try {
+    existingUser.password = await hashPassword(newPassword);
+    await existingUser.save();
+  } catch (err) {
+    return res.status(500).json({
+      error: {
+        message: "Couldn't update your password." + err,
+      },
+    });
+  }
+  return res.status(200).json({
+    message: "Password changed successfully",
+  });
 }
 
 export default handler;

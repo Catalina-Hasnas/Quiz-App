@@ -1,9 +1,11 @@
 import { updateUserPassword } from "@/services/auth";
+import { useRouter } from "next/router";
 import { FormEvent, useContext, useRef } from "react";
 import classes from "./profile.module.css";
 import { AuthContext } from "./_app";
 
 function ProfilePage() {
+  const router = useRouter();
   const { token } = useContext(AuthContext);
   const oldPassRef = useRef<HTMLInputElement>(null);
   const newPassRef = useRef<HTMLInputElement>(null);
@@ -15,11 +17,27 @@ function ProfilePage() {
     const newPass = newPassRef.current?.value || "";
 
     try {
-      await updateUserPassword(oldPass, newPass, token as string);
+      const updateUserResponse = await updateUserPassword(
+        oldPass,
+        newPass,
+        token as string
+      );
+      if (updateUserResponse.ok) {
+        const data = await updateUserResponse.json();
+        alert(data.message);
+      } else {
+        const errorData = await updateUserResponse.json();
+        throw new Error(errorData.error.message);
+      }
     } catch (error) {
+      router.replace("/");
       console.log(error);
     }
   };
+
+  if (!token) {
+    return <div> Please sign in in order to view this page </div>;
+  }
 
   return (
     <section className={classes.profile}>

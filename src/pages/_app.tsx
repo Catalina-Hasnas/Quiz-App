@@ -7,15 +7,19 @@ import { createContext } from "react";
 interface IAuthContext {
   token: string | null;
   userId: string | null;
-  login: (uid: string, token: string, expirationDate?: Date) => void;
-  logout: () => void;
+  addUserInfoInLocalStorage: (
+    id: string,
+    token: string,
+    expirationDate?: Date
+  ) => void;
+  removeUserInfoFromLocalStorage: () => void;
 }
 
 export const AuthContext = createContext<IAuthContext>({
-  userId: "",
-  token: "",
-  login: () => {},
-  logout: () => {},
+  userId: null,
+  token: null,
+  addUserInfoInLocalStorage: () => {},
+  removeUserInfoFromLocalStorage: () => {},
 });
 
 export default function App({ Component, pageProps }: AppProps) {

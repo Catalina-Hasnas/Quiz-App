@@ -7,17 +7,17 @@ export const useAuth = () => {
   const [tokenExpirationDate, setTokenExpirationDate] = useState<Date>();
   const [userId, setUserId] = useState<string | null>(null);
 
-  const login = useCallback(
-    (uid: string, token: string, expirationDate?: Date) => {
+  const addUserInfoInLocalStorage = useCallback(
+    (id: string, token: string, expirationDate?: Date) => {
       setToken(token);
-      setUserId(uid);
+      setUserId(id);
       const tokenExpirationDate =
         expirationDate || new Date(new Date().getTime() + 1000 * 60 * 180);
       setTokenExpirationDate(tokenExpirationDate);
       localStorage.setItem(
         "userData",
         JSON.stringify({
-          userId: uid,
+          userId: id,
           token: token,
           expiration: tokenExpirationDate.toISOString(),
         })
@@ -26,7 +26,7 @@ export const useAuth = () => {
     []
   );
 
-  const logout = useCallback(() => {
+  const removeUserInfoFromLocalStorage = useCallback(() => {
     setToken(null);
     setTokenExpirationDate(undefined);
     setUserId(null);
@@ -37,11 +37,11 @@ export const useAuth = () => {
     if (token && tokenExpirationDate) {
       const remainingTime =
         tokenExpirationDate.getTime() - new Date().getTime();
-      logoutTimer = setTimeout(logout, remainingTime);
+      logoutTimer = setTimeout(removeUserInfoFromLocalStorage, remainingTime);
     } else {
       clearTimeout(logoutTimer);
     }
-  }, [token, logout, tokenExpirationDate]);
+  }, [token, removeUserInfoFromLocalStorage, tokenExpirationDate]);
 
   useEffect(() => {
     const storedData = JSON.parse(localStorage.getItem("userData") || "{}");
@@ -50,12 +50,17 @@ export const useAuth = () => {
       storedData.token &&
       new Date(storedData.expiration) > new Date()
     ) {
-      login(
+      addUserInfoInLocalStorage(
         storedData.userId,
         storedData.token,
         new Date(storedData.expiration)
       );
     }
-  }, [login]);
-  return { token, login, logout, userId };
+  }, [addUserInfoInLocalStorage]);
+  return {
+    token,
+    addUserInfoInLocalStorage,
+    removeUserInfoFromLocalStorage,
+    userId,
+  };
 };

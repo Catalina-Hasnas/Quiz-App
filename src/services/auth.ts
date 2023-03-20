@@ -1,6 +1,5 @@
 import { hash, compare } from "bcryptjs";
 import jwt, { Secret } from "jsonwebtoken";
-import { HttpError, ILoginResponse, IUser } from "./types";
 
 export const hashPassword = async (password: string) => {
   const hashedPassword = await hash(password, 12);
@@ -13,17 +12,6 @@ export const verifyPassword = async (
 ) => {
   const isValid = await compare(password, hashedPassword);
   return isValid;
-};
-
-export const generateToken = async (user: IUser) => {
-  const token = await jwt.sign(
-    { id: user._id, email: user.email },
-    process.env.ACCESS_TOKEN_SECRET as Secret,
-    {
-      expiresIn: "3h",
-    }
-  );
-  return token;
 };
 
 export const getToken = async (id: string, email: string) => {
@@ -52,13 +40,7 @@ export const createUser = async (email: string, password: string) => {
     },
   });
 
-  const data = await response.json();
-
-  if (!response.ok) {
-    throw new Error(data.message || "Something went wrong!");
-  }
-
-  return data;
+  return response;
 };
 
 export const loginUser = async (email: string, password: string) => {
@@ -70,13 +52,7 @@ export const loginUser = async (email: string, password: string) => {
     },
   });
 
-  const data: ILoginResponse | HttpError = await response.json();
-
-  if (!response.ok) {
-    console.log((data as HttpError).message);
-  }
-
-  return data;
+  return response;
 };
 
 export const updateUserPassword = async (
@@ -93,11 +69,5 @@ export const updateUserPassword = async (
     },
   });
 
-  const data = await response.json();
-
-  if (!response.ok) {
-    throw new Error(data.message || "Something went wrong!");
-  }
-
-  return data;
+  return response;
 };

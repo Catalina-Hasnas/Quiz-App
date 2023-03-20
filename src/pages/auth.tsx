@@ -1,12 +1,11 @@
 import { createUser, loginUser } from "@/services/auth";
-import { ILoginResponse } from "@/services/types";
 import { useRouter } from "next/router";
 import { FormEvent, useContext, useRef, useState } from "react";
 import classes from "./login.module.css";
 import { AuthContext } from "./_app";
 
 const AuthPage = () => {
-  const { login } = useContext(AuthContext);
+  const { addUserInfoInLocalStorage } = useContext(AuthContext);
   const emailInputRef = useRef<HTMLInputElement>(null);
   const passwordInputRef = useRef<HTMLInputElement>(null);
 
@@ -21,22 +20,35 @@ const AuthPage = () => {
 
     if (isLogin) {
       try {
-        const result = await loginUser(enteredEmail, enteredPassword);
-        console.log(result);
-
-        login((result as ILoginResponse).id, (result as ILoginResponse).token);
+        const loginResponse = await loginUser(enteredEmail, enteredPassword);
+        if (loginResponse.ok) {
+          const data = await loginResponse.json();
+          addUserInfoInLocalStorage(data.data.id, data.data.token);
+          router.replace("/profile");
+        } else {
+          const errorData = await loginResponse.json();
+          throw new Error(errorData.error.message);
+        }
       } catch (error) {
-        console.log(error);
+        router.replace("/");
+        console.error(error);
       }
-      router.replace("/profile");
     } else {
       try {
-        const result = await createUser(enteredEmail, enteredPassword);
-        login((result as ILoginResponse).id, (result as ILoginResponse).token);
+        const signUpResponse = await createUser(enteredEmail, enteredPassword);
+        if (signUpResponse.ok) {
+          const data = await signUpResponse.json();
+          addUserInfoInLocalStorage(data.data.id, data.data.token);
+          router.replace("/profile");
+        } else {
+          const errorData = await signUpResponse.json();
+          throw new Error(errorData.error.message);
+        }
+        router.replace("/profile");
       } catch (error) {
+        router.replace("/");
         console.log(error);
       }
-      router.replace("/profile");
     }
   };
 

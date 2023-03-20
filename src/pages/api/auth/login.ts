@@ -1,33 +1,39 @@
 import { User } from "@/models/user";
 import { verifyPassword, getToken } from "@/services/auth";
 import { connectToDatabase } from "@/services/database.service";
-import { HttpError, ILoginResponse, IUser } from "@/services/types";
+import { IAuthResponse, IUserModel, UserDocument } from "@/services/types";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ILoginResponse | HttpError>
+  res: NextApiResponse<IAuthResponse>
 ) {
   if (req.method !== "POST") {
     return;
   }
 
-  const data: IUser = req.body;
-
-  const { email, password } = data;
+  const { email, password }: IUserModel = req.body;
 
   await connectToDatabase();
 
-  let existingUser: IUser | null = null;
+  let existingUser: UserDocument | null = null;
   try {
     existingUser = await User.findOne({ email: email });
   } catch (err) {
-    console.log(err);
+    return res.status(500).json({
+      data: null,
+      error: {
+        message: "Couldn't log you in." + err,
+      },
+    });
   }
 
   if (!existingUser) {
-    res.status(401).json({
-      message: "Coudln't find a user with such an email.",
+    return res.status(404).json({
+      data: null,
+      error: {
+        message: "Couldn't find a user with such an email.",
+      },
     });
   }
 
@@ -39,35 +45,47 @@ async function handler(
       existingUser?.password || ""
     );
   } catch (err) {
-    res.status(401).json({
-      message:
-        "Couldn't log you in. Please check your credentials and try again.",
+    return res.status(500).json({
+      data: null,
+      error: {
+        message: "Couldn't log you in." + err,
+      },
     });
   }
 
   if (!isValidPassword) {
-    res.status(401).json({
-      message:
-        "The password is wrong. Please check your credentials and try again.",
+    return res.status(401).json({
+      data: null,
+      error: {
+        message:
+          "The password you entered is incorrect. Please check your credentials and try again.",
+      },
     });
   }
 
   let token;
-  try {
-    token = await getToken(existingUser?._id || "", existingUser?.email || "");
-  } catch (err) {
-    res.status(500).json({
-      message: "Loging in failed, please try again later.",
-    });
+
+  if (existingUser) {
+    try {
+      token = await getToken(existingUser.id.toString(), existingUser.email);
+    } catch (err) {
+      return res.status(500).json({
+        data: null,
+        error: {
+          message: "Couldn't log you in." + err,
+        },
+      });
+    }
   }
 
-  if (existingUser && isValidPassword) {
-    res.json({
-      id: existingUser?._id,
-      email: existingUser?.email,
+  return res.status(200).json({
+    data: {
+      id: existingUser.id.toString(),
+      email: existingUser.email,
       token: `Bearer ${token}`,
-    });
-  }
+    },
+    error: null,
+  });
 }
 
 export default handler;

@@ -1,7 +1,7 @@
 import { JwtPayload } from "jsonwebtoken";
+import { Document } from "mongoose";
 
-export interface IUser {
-  _id: string;
+export interface IUserModel {
   email: string;
   password: string;
 }
@@ -11,10 +11,16 @@ export interface IUserToken extends JwtPayload {
   email: string;
 }
 
-export interface ILoginResponse {
+export interface IAuthSuccessful extends Omit<IUserModel, "password"> {
   id: string;
-  email: string;
   token: string;
 }
 
 export type HttpError = { message: string };
+
+export interface IAuthResponse {
+  error: HttpError | null;
+  data: IAuthSuccessful | null;
+}
+
+export type UserDocument = Document & IUserModel;

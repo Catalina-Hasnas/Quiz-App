@@ -1,17 +1,18 @@
 import { User } from "@/models/user";
 import { getToken, hashPassword } from "@/services/auth";
 import { connectToDatabase } from "@/services/database.service";
-import { IUser } from "@/services/types";
+import { IAuthResponse, IUserModel, UserDocument } from "@/services/types";
 import type { NextApiRequest, NextApiResponse } from "next";
 
-async function handler(req: NextApiRequest, res: NextApiResponse<unknown>) {
+async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse<IAuthResponse>
+) {
   if (req.method !== "POST") {
     return;
   }
 
-  const data: IUser = req.body;
-
-  const { email, password } = data;
+  const { email, password }: IUserModel = req.body;
 
   if (
     !email ||
@@ -19,25 +20,33 @@ async function handler(req: NextApiRequest, res: NextApiResponse<unknown>) {
     !password ||
     password.trim().length < 6
   ) {
-    res.status(422).json({
-      message:
-        "Invalid input - password should also be at least 7 characters long.",
+    return res.status(422).json({
+      data: null,
+      error: {
+        message:
+          "Invalid input. Password should also be at least 7 characters long. Email should contain @.",
+      },
     });
-    return;
   }
 
   await connectToDatabase();
 
-  let existingUser;
+  let existingUser: UserDocument | null = null;
   try {
     existingUser = await User.findOne({ email: email });
   } catch (err) {
-    console.log(err);
+    return res.status(500).json({
+      data: null,
+      error: {
+        message: "Couldn't sign you up." + err,
+      },
+    });
   }
 
   if (existingUser) {
-    res.status(422).json({ message: "User exists already!" });
-    return;
+    return res
+      .status(409)
+      .json({ data: null, error: { message: "User exists already!" } });
   }
 
   const hashedPassword = await hashPassword(password);
@@ -50,33 +59,33 @@ async function handler(req: NextApiRequest, res: NextApiResponse<unknown>) {
   try {
     await createdUser.save();
   } catch (err) {
-    console.log(err);
+    return res.status(500).json({
+      data: null,
+      error: {
+        message: "Couldn't sign you up." + err,
+      },
+    });
   }
 
-  createdUser
-    .save()
-    .catch((err: string) =>
-      res.status(400).json({ error: "Error on '/api/auth/signup': " + err })
-    );
-
-  let token: string = "";
+  let token;
   try {
-    token = await getToken(createdUser._id, createdUser.email);
+    token = await getToken(createdUser.id, createdUser.email);
   } catch (err) {
-    console.log(err);
+    return res.status(500).json({
+      data: null,
+      error: {
+        message: "Couldn't sign you up. Unable to generate token.",
+      },
+    });
   }
 
-  if (!token) {
-    res
-      .status(401)
-      .json({ message: "Couldn't sign you up. Please try again." });
-    return;
-  }
-
-  res.status(201).json({
-    id: createdUser?._id,
-    email: createdUser?.email,
-    token: `Bearer ${token}`,
+  return res.status(201).json({
+    data: {
+      id: createdUser.id,
+      email: createdUser.email,
+      token: `Bearer ${token}`,
+    },
+    error: null,
   });
 }
 

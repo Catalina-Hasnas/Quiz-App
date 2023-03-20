@@ -5,7 +5,7 @@ import { useContext } from "react";
 import classes from "./MainNavigation.module.css";
 
 const MainNavigation = () => {
-  const { logout, token } = useContext(AuthContext);
+  const { removeUserInfoFromLocalStorage, token } = useContext(AuthContext);
   return (
     <header className={classes.header}>
       <Link href="/">Home</Link>
@@ -23,7 +23,9 @@ const MainNavigation = () => {
                 <Link href="/profile">Profile</Link>
               </li>
               <li>
-                <button onClick={() => logout()}>Logout</button>
+                <button onClick={() => removeUserInfoFromLocalStorage()}>
+                  Logout
+                </button>
               </li>
             </>
           )}
