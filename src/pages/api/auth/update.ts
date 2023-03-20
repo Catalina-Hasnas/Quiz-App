@@ -31,7 +31,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<unknown>) {
       return res.status(404).json({ error: "User not found" });
     }
 
-    user.password = newPassword;
+    user.password = await hashPassword(newPassword);
     await user.save();
 
     res.json({ message: "Password changed successfully" });

@@ -1,8 +1,10 @@
 import { updateUserPassword } from "@/services/auth";
-import { FormEvent, useRef } from "react";
+import { FormEvent, useContext, useRef } from "react";
 import classes from "./profile.module.css";
+import { AuthContext } from "./_app";
 
 function ProfilePage() {
+  const { token } = useContext(AuthContext);
   const oldPassRef = useRef<HTMLInputElement>(null);
   const newPassRef = useRef<HTMLInputElement>(null);
 
@@ -13,8 +15,7 @@ function ProfilePage() {
     const newPass = newPassRef.current?.value || "";
 
     try {
-      const result = await updateUserPassword(oldPass, newPass);
-      console.log(result);
+      await updateUserPassword(oldPass, newPass, token as string);
     } catch (error) {
       console.log(error);
     }

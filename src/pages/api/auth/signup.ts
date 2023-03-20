@@ -1,5 +1,5 @@
 import { User } from "@/models/user";
-import { generateToken, hashPassword } from "@/services/auth";
+import { getToken, hashPassword } from "@/services/auth";
 import { connectToDatabase } from "@/services/database.service";
 import { IUser } from "@/services/types";
 import type { NextApiRequest, NextApiResponse } from "next";
@@ -42,20 +42,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse<unknown>) {
 
   const hashedPassword = await hashPassword(password);
 
-  let token;
-  try {
-    token = await generateToken(data);
-  } catch (err) {
-    console.log(err);
-  }
-
-  if (!token) {
-    res
-      .status(401)
-      .json({ message: "Couldn't sign you up. Please try again." });
-    return;
-  }
-
   const createdUser = new User({
     email,
     password: hashedPassword,
@@ -69,14 +55,29 @@ async function handler(req: NextApiRequest, res: NextApiResponse<unknown>) {
 
   createdUser
     .save()
-    .then(() =>
-      res
-        .status(201)
-        .json({ msg: "Successfuly created new User: " + createdUser })
-    )
     .catch((err: string) =>
       res.status(400).json({ error: "Error on '/api/auth/signup': " + err })
     );
+
+  let token: string = "";
+  try {
+    token = await getToken(createdUser._id, createdUser.email);
+  } catch (err) {
+    console.log(err);
+  }
+
+  if (!token) {
+    res
+      .status(401)
+      .json({ message: "Couldn't sign you up. Please try again." });
+    return;
+  }
+
+  res.status(201).json({
+    id: createdUser?._id,
+    email: createdUser?.email,
+    token: `Bearer ${token}`,
+  });
 }
 
 export default handler;

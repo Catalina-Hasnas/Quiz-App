@@ -18,7 +18,7 @@ export const verifyPassword = async (
 export const generateToken = async (user: IUser) => {
   const token = await jwt.sign(
     { id: user._id, email: user.email },
-    process.env.JWT_SECRET as Secret,
+    process.env.ACCESS_TOKEN_SECRET as Secret,
     {
       expiresIn: "3h",
     }
@@ -81,15 +81,15 @@ export const loginUser = async (email: string, password: string) => {
 
 export const updateUserPassword = async (
   oldPassword: string,
-  newPassword: string
+  newPassword: string,
+  token: string
 ) => {
   const response = await fetch("/api/auth/update", {
     method: "POST",
     body: JSON.stringify({ oldPassword, newPassword }),
     headers: {
       "Content-Type": "application/json",
-      authorization:
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0MTFiN2UyNmU2YjNhZDYxMjk2OTM2ZiIsImVtYWlsIjoicGV0cnVAZW1haWwuY29tIiwiaWF0IjoxNjc5MDc0MTEwLCJleHAiOjE2NzkwODQ5MTB9.ygTUYaQ5Ja3-q59ekw0n55NHVwTA2i0Shh7rTma0z-I",
+      authorization: token,
     },
   });
 

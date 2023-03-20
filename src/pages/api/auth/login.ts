@@ -48,7 +48,7 @@ async function handler(
   if (!isValidPassword) {
     res.status(401).json({
       message:
-        "Couldn't log you in. Please check your credentials and try again.",
+        "The password is wrong. Please check your credentials and try again.",
     });
   }
 
@@ -61,7 +61,7 @@ async function handler(
     });
   }
 
-  if (existingUser) {
+  if (existingUser && isValidPassword) {
     res.json({
       id: existingUser?._id,
       email: existingUser?.email,

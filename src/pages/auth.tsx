@@ -1,12 +1,12 @@
 import { createUser, loginUser } from "@/services/auth";
-import { useAuth } from "@/services/providers/AuthProvider";
 import { ILoginResponse } from "@/services/types";
 import { useRouter } from "next/router";
-import { FormEvent, useRef, useState } from "react";
+import { FormEvent, useContext, useRef, useState } from "react";
 import classes from "./login.module.css";
+import { AuthContext } from "./_app";
 
 const AuthPage = () => {
-  const { login } = useAuth();
+  const { login } = useContext(AuthContext);
   const emailInputRef = useRef<HTMLInputElement>(null);
   const passwordInputRef = useRef<HTMLInputElement>(null);
 
@@ -36,6 +36,7 @@ const AuthPage = () => {
       } catch (error) {
         console.log(error);
       }
+      router.replace("/profile");
     }
   };
 

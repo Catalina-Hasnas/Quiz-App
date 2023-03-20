@@ -1,22 +1,32 @@
+import { AuthContext } from "@/pages/_app";
 import Link from "next/link";
+import { useContext } from "react";
 
 import classes from "./MainNavigation.module.css";
 
 const MainNavigation = () => {
+  const { logout, token } = useContext(AuthContext);
   return (
     <header className={classes.header}>
       <Link href="/">Home</Link>
+      <span> </span>
       <nav>
         <ul>
-          <li>
-            <Link href="/auth">Login</Link>
-          </li>
-          <li>
-            <Link href="/profile">Profile</Link>
-          </li>
-          <li>
-            <button>Logout</button>
-          </li>
+          {!token && (
+            <li>
+              <Link href="/auth">Login</Link>
+            </li>
+          )}
+          {token && (
+            <>
+              <li>
+                <Link href="/profile">Profile</Link>
+              </li>
+              <li>
+                <button onClick={() => logout()}>Logout</button>
+              </li>
+            </>
+          )}
         </ul>
       </nav>
     </header>
