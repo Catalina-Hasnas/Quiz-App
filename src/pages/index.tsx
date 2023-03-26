@@ -11,11 +11,11 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main style={{ display: "flex", flexDirection: "column" }}>
-        <Link href="/login">Log in</Link>
+        {/* <Link href="/login">Log in</Link>
         <Link href="/signup">Sign up</Link>
         <Link href="/profile">My profile</Link>
         <Link href="/quizzes">See all quizzes</Link>
-        <Link href="/myquizzes">My quizzes</Link>
+        <Link href="/myquizzes">My quizzes</Link> */}
       </main>
     </>
   );
