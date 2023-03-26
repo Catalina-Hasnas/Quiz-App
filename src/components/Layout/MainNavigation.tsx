@@ -9,7 +9,6 @@ const MainNavigation = () => {
   return (
     <header className={classes.header}>
       <Link href="/">Home</Link>
-      <span> </span>
       <nav>
         <ul>
           {!token && (
