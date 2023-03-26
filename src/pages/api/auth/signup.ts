@@ -74,7 +74,7 @@ async function handler(
     return res.status(500).json({
       data: null,
       error: {
-        message: "Couldn't sign you up. Unable to generate token.",
+        message: "Couln't log in. Unable to generate token.",
       },
     });
   }
