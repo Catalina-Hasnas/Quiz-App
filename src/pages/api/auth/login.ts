@@ -1,8 +1,9 @@
 import { User } from "@/models/user";
 import { verifyPassword, getToken } from "@/services/auth";
 import { connectToDatabase } from "@/services/database.service";
-import { IAuthResponse, IUserModel, UserDocument } from "@/services/types";
+import { IAuthResponse, UserDocument } from "@/services/auth/types";
 import type { NextApiRequest, NextApiResponse } from "next";
+import { UserModel } from "@/models/types";
 
 async function handler(
   req: NextApiRequest,
@@ -12,7 +13,7 @@ async function handler(
     return;
   }
 
-  const { email, password }: IUserModel = req.body;
+  const { email, password }: UserModel = req.body;
 
   await connectToDatabase();
 

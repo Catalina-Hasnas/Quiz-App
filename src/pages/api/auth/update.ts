@@ -1,7 +1,7 @@
 import { User } from "@/models/user";
 import { hashPassword, verifyPassword, verifyToken } from "@/services/auth";
 import { connectToDatabase } from "@/services/database.service";
-import { IUserToken, UserDocument } from "@/services/types";
+import { IUserToken, UserDocument } from "@/services/auth/types";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 async function handler(req: NextApiRequest, res: NextApiResponse<unknown>) {
