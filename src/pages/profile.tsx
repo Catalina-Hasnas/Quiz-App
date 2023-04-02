@@ -1,4 +1,4 @@
-import { updateUserPassword } from "@/services/auth";
+import { updateUserPassword } from "@/services/auth/auth";
 import { useRouter } from "next/router";
 import { FormEvent, useContext, useRef } from "react";
 import classes from "./profile.module.css";

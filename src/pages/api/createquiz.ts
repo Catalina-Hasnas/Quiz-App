@@ -1,7 +1,7 @@
 import { Quiz } from "@/models/quiz";
 import { QuizModel } from "@/models/types";
 import { User } from "@/models/user";
-import { verifyToken } from "@/services/auth";
+import { verifyToken } from "@/services/auth/auth";
 import { IUserToken, UserDocument } from "@/services/auth/types";
 import { connectToDatabase } from "@/services/database.service";
 import type { NextApiRequest, NextApiResponse } from "next";

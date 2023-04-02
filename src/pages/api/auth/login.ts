@@ -1,5 +1,5 @@
 import { User } from "@/models/user";
-import { verifyPassword, getToken } from "@/services/auth";
+import { verifyPassword, getToken } from "@/services/auth/auth";
 import { connectToDatabase } from "@/services/database.service";
 import { IAuthResponse, UserDocument } from "@/services/auth/types";
 import type { NextApiRequest, NextApiResponse } from "next";
