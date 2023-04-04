@@ -1,0 +1,78 @@
+
+/*******************************/
+/*         UTILITIES           */
+/*******************************/
+
+/* Flex */
+.flex {
+  display: flex;
+  gap: var(--gap, var(--base-spacing));
+}
+
+.flex.grow > * {
+  flex: 1 1;
+}
+
+.flex.justify-space-around {
+  justify-content: space-around;
+}
+
+.flex.justify-center {
+  justify-content: center;
+}
+
+.flex.direction-column {
+  flex-direction: column;
+}
+
+.flex.direction-row {
+  flex-direction: row;
+}
+
+.flex.wrap {
+  flex-wrap: wrap;
+}
+
+/* Spacing */
+.m-1 {
+  margin: var(--base-spacing);
+}
+
+.m-2 {
+  margin: calc(var(--base-spacing) * 2);
+}
+
+.p-1 {
+  padding: var(--base-spacing);
+}
+
+.p-2 {
+  padding: calc(var(--base-spacing) * 2);
+}
+
+.gap-0 {
+  --gap: 0;
+}
+
+.gap-2 {
+  --gap: calc(var(--base-spacing) * 2);
+}
+
+.gap-3 {
+  --gap: calc(var(--base-spacing) * 2);
+}
+
+/* Lists */
+.no-bullet {
+  list-style: none;
+}
+
+ul.display-block > * {
+  display: block;
+}
+
+/* Specials */
+
+.margin-inline-auto {
+  margin-inline: auto;
+}
