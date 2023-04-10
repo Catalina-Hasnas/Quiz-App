@@ -1,3 +1,4 @@
+import Head from "next/head";
 import MainNavigation from "./MainNavigation";
 
 interface ILayoutProps {
@@ -7,8 +8,14 @@ interface ILayoutProps {
 const Layout = ({ children }: ILayoutProps) => {
   return (
     <>
+      <Head>
+        <title>Quiz App</title>
+        <meta name="description" content="Quiz app" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
       <MainNavigation />
-      <main>{children}</main>
+      <main className="margin-inline-auto">{children}</main>
     </>
   );
 };
