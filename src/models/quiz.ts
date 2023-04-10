@@ -1,12 +1,20 @@
 import { ObjectId } from "mongodb";
 import { Schema, model, models } from "mongoose";
-import { Question } from "./question";
-import { QuizModel } from "./types";
+import { QuestionModel, questionSchema } from "./question";
+
+export interface QuizModel {
+  title: string;
+  questions?: QuestionModel[];
+  creator_id?: string;
+}
 
 const quizSchema = new Schema<QuizModel>({
   title: { type: String, required: true },
-  questions: [Question],
+  questions: [questionSchema],
   creator_id: { type: ObjectId, required: true, ref: "User" },
 });
 
-export const Quiz = models.Quiz<QuizModel> || model("Quiz", quizSchema);
+// @ts-ignore
+const Quiz = models.Quiz<QuizModel> || model("Quiz", quizSchema);
+
+export default Quiz;

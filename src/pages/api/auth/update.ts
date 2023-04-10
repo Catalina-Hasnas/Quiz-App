@@ -1,7 +1,7 @@
-import { User } from "@/models/user";
+import User from "@/models/user";
 import { hashPassword, verifyToken } from "@/services/auth/auth";
 import { connectToDatabase } from "@/services/database.service";
-import { IUserToken, UserDocument } from "@/services/auth/types";
+import { IUserToken } from "@/services/auth/types";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 async function handler(req: NextApiRequest, res: NextApiResponse<unknown>) {
@@ -22,7 +22,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<unknown>) {
 
   await connectToDatabase();
 
-  let existingUser: UserDocument | null = null;
+  let existingUser;
   try {
     existingUser = await User.findById(userId);
   } catch (err) {
