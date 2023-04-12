@@ -1,9 +1,10 @@
 import { AuthContext } from "@/pages/_app";
 import { useRouter } from "next/router";
-import { FormEvent, useContext, useEffect, useRef } from "react";
-import { Formik, useFormik } from "formik";
+import { FormEvent, useContext } from "react";
+import { Formik } from "formik";
 import useSWR from "swr";
 import { QuestionModel } from "@/models/question";
+import OptionForm from "./OptionForm";
 
 // const validate = (values) => {
 //   const errors = {};
@@ -50,18 +51,22 @@ const QuestionForm = () => {
     }
   };
 
-  const optionInputRef = useRef<HTMLInputElement>(null);
-
   type Response = {
     data: QuestionModel;
   };
 
   const { data, error, isLoading } = useSWR<Response>(
-    `/api/edit_quiz/${router.query.quizId}/question/${router.query.questionId}`,
-    getQuestionById
+    router.query
+      ? `/api/edit_quiz/${router.query.quizId}/question/${router.query.questionId}`
+      : null,
+    router.query ? getQuestionById : null
   );
 
-  if (isLoading) {
+  if (error) {
+    return <p>ERROR</p>;
+  }
+
+  if (isLoading || !router.query.quizId) {
     return <p>...is loading</p>;
   }
 
@@ -168,38 +173,7 @@ const QuestionForm = () => {
             </select>
             {touched.type && errors.type ? <div>{errors.type}</div> : null}
             {values.type !== "open" && (
-              <div>
-                <ul>
-                  {values.options?.map((option, index) => (
-                    <li key={index}>{option.value}</li>
-                  ))}
-                </ul>
-                <input
-                  id="option"
-                  name="option"
-                  type="text"
-                  ref={optionInputRef}
-                />
-                <button
-                  type="button"
-                  onClick={() => {
-                    const newOption = {
-                      value: optionInputRef.current?.value || "",
-                      isRightAnswer: false,
-                    };
-                    const options = [...values.options, newOption];
-                    setValues({
-                      ...values,
-                      options: options,
-                    });
-                    if (optionInputRef.current) {
-                      optionInputRef.current.value = "";
-                    }
-                  }}
-                >
-                  Create Option
-                </button>
-              </div>
+              <OptionForm values={values} setValues={setValues} />
             )}
 
             <button type="submit">Submit</button>
