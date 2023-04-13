@@ -1,10 +1,10 @@
 import { ObjectId } from "mongodb";
 import { Schema, model, models } from "mongoose";
-import { QuestionModel, questionSchema } from "./question";
+import { QuestionModelWithId, questionSchema } from "./question";
 
 export interface QuizModel {
   title: string;
-  questions?: QuestionModel[];
+  questions: QuestionModelWithId[];
   creator_id?: string;
 }
 

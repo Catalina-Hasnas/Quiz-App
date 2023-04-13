@@ -1,10 +1,20 @@
 import Question, { QuestionModelWithId } from "@/models/question";
-import Quiz from "@/models/quiz";
+import Quiz, { QuizModel } from "@/models/quiz";
 import User from "@/models/user";
 import { verifyToken } from "@/services/auth/auth";
 import { IUserToken } from "@/services/auth/types";
 import { connectToDatabase } from "@/services/database.service";
 import type { NextApiRequest, NextApiResponse } from "next";
+
+type InputObject = { [key: string]: any };
+
+const formatObject = (obj: InputObject): { [key: string]: any } => {
+  const formattedObj: { [key: string]: any } = {};
+  for (const key in obj) {
+    formattedObj[`questions.$.${key}`] = obj[key];
+  }
+  return formattedObj;
+};
 
 async function handler(req: NextApiRequest, res: NextApiResponse<unknown>) {
   const quizId = req.query.params?.[0];
@@ -53,28 +63,63 @@ async function handler(req: NextApiRequest, res: NextApiResponse<unknown>) {
     });
   }
 
-  if (!questionId) {
-    const newQuestion = new Question({
-      title: "",
-      type: "open",
-      options: [],
-    });
+  if (req.method === "POST") {
+    const newQuestion = new Question(req.body);
 
     await existingQuiz.questions.push(newQuestion);
 
     const updatedQuiz = await existingQuiz.save();
 
     return res.status(201).json({
-      message: "New question added!",
-      question_id: updatedQuiz?.questions?.at(-1)?.id,
+      data: {
+        question_id: updatedQuiz?.questions?.at(-1)?.id,
+      },
     });
   }
 
-  if (quizId && questionId) {
+  if (quizId) {
     if (req.method === "GET") {
-      Quiz.findOne(
+      Quiz.findById(quizId)
+        .then((quiz) => {
+          if (!quiz) {
+            return res.status(404).json({
+              error: {
+                message: `Question with ID ${questionId} not found in Quiz with ID ${quizId}`,
+              },
+            });
+          }
+          const questions = (quiz as QuizModel).questions.map(
+            ({ _id, title }) => ({
+              _id,
+              title,
+            })
+          );
+          const currentQuestion =
+            (quiz as QuizModel).questions.find(
+              (q) => q._id.toString() === questionId
+            ) || null;
+
+          return res.status(200).json({
+            data: {
+              questions,
+              currentQuestion,
+            },
+          });
+        })
+        .catch((err) => {
+          return res.status(500).json({
+            error: {
+              message: `Couldn't find Question with ID ${questionId} in Quiz with ID ${quizId}: ${err}`,
+            },
+          });
+        });
+    }
+
+    if (req.method === "PATCH") {
+      Quiz.findOneAndUpdate(
         { _id: quizId, "questions._id": questionId },
-        { "questions.$": 1 }
+        { $set: formatObject(req.body) },
+        { new: true }
       )
         .then((quiz) => {
           if (!quiz) {
@@ -84,59 +129,22 @@ async function handler(req: NextApiRequest, res: NextApiResponse<unknown>) {
               },
             });
           }
-          const question = quiz.questions[0];
-          return res.status(200).json({
+          const question = quiz.questions.find(
+            (question: QuestionModelWithId) =>
+              question._id.toString() === questionId
+          );
+          return res.status(201).json({
             data: question,
           });
         })
         .catch((err) => {
           return res.status(404).json({
             error: {
-              message: `Couldn't find Question with ID ${questionId} in Quiz with ID ${quizId}: ${err}`,
+              message: `Couldn't update question with ID ${questionId} in Quiz with ID ${quizId}: ${err}`,
             },
           });
         });
     }
-  }
-  type InputObject = { [key: string]: any };
-
-  function formatObject(obj: InputObject): { [key: string]: any } {
-    const formattedObj: { [key: string]: any } = {};
-    for (const key in obj) {
-      formattedObj[`questions.$.${key}`] = obj[key];
-    }
-    return formattedObj;
-  }
-
-  if (req.method === "PATCH") {
-    Quiz.findOneAndUpdate(
-      { _id: quizId, "questions._id": questionId },
-      { $set: formatObject(req.body) },
-      { new: true }
-    )
-      .then((quiz) => {
-        if (!quiz) {
-          return res.status(404).json({
-            error: {
-              message: `Question with ID ${questionId} not found in Quiz with ID ${quizId}`,
-            },
-          });
-        }
-        const question = quiz.questions.find(
-          (question: QuestionModelWithId) =>
-            question._id.toString() === questionId
-        );
-        return res.status(201).json({
-          data: question,
-        });
-      })
-      .catch((err) => {
-        return res.status(404).json({
-          error: {
-            message: `Couldn't update question with ID ${questionId} in Quiz with ID ${quizId}: ${err}`,
-          },
-        });
-      });
   }
 }
 

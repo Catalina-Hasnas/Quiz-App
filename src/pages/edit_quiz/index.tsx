@@ -18,9 +18,7 @@ const CreateQuiz = () => {
       });
       if (result.ok) {
         const data = await result.json();
-        router.replace(
-          `/edit_quiz/${data.data.quiz_id}/question/${data.data.question_id}`
-        );
+        router.replace(`/edit_quiz/${data.data.quiz_id}`);
       } else {
         const errorData = await result.json();
         throw new Error(errorData.error.message);

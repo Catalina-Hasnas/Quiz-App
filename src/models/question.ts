@@ -13,7 +13,7 @@ const optionSchema = new Schema<Option>({
 export type QuestionType = "open" | "single_choice" | "multi_choice";
 
 export interface QuestionModel {
-  title?: string;
+  title: string;
   type: QuestionType;
   options: Option[];
 }

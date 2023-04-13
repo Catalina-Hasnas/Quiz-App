@@ -49,6 +49,7 @@ async function handler(
   const newQuiz = new Quiz({
     title,
     creator_id: userId,
+    questions: [],
   });
 
   let createdQuiz;
@@ -65,20 +66,9 @@ async function handler(
   }
 
   if (createdQuiz) {
-    const newQuestion = new Question({
-      title: "",
-      type: "open",
-      options: [],
-    });
-
-    await createdQuiz.questions.push(newQuestion);
-
-    const quizWithFirstQuestion = await createdQuiz.save();
-
     return res.status(201).json({
       data: {
-        quiz_id: quizWithFirstQuestion.id,
-        question_id: quizWithFirstQuestion.questions[0].id,
+        quiz_id: createdQuiz.id,
       },
       error: null,
     });

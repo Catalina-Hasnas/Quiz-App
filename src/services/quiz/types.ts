@@ -1,6 +1,5 @@
 interface IQuizCreatedSuccessful {
   quiz_id: string;
-  question_id: string;
 }
 
 type HttpError = { message: string };
