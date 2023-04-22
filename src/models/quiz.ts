@@ -8,6 +8,10 @@ export interface QuizModel {
   creator_id?: string;
 }
 
+export interface QuizModelWithId extends QuizModel {
+  _id: string;
+}
+
 const quizSchema = new Schema<QuizModel>({
   title: { type: String, required: true },
   questions: [questionSchema],

@@ -4,7 +4,11 @@ export default function Home() {
       <div className="flex gap-0 direction-column p-1 m-1 surface-2 rad-shadow">
         <h1 className="text-align-center text-1">Quiz App</h1>
         <div className="flex justify-center">
-          <input className="text-2 text-align-center font-size-m search-field" type="text" placeholder="Search..."></input>
+          <input
+            className="text-2 text-align-center font-size-m search-field"
+            type="text"
+            placeholder="Search..."
+          ></input>
           <button className="p-1 btn-link text-1 search-button">
             <i className="gg-search"></i>
           </button>
@@ -61,7 +65,7 @@ export default function Home() {
         <Link href="/signup">Sign up</Link>
         <Link href="/profile">My profile</Link>
         <Link href="/quizzes">See all quizzes</Link>
-        <Link href="/myquizzes">My quizzes</Link> */}
+        <Link href="/my_quizzes">My quizzes</Link> */}
       </main>
     </>
   );

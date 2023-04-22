@@ -8,7 +8,7 @@ const CreateQuiz = () => {
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
-      const result = await fetch("/api/createquiz", {
+      const result = await fetch("/api/quizzes/create", {
         method: "POST",
         body: JSON.stringify({ title: titleInputRef?.current?.value }),
         headers: {

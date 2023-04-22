@@ -1,4 +1,3 @@
-import Question from "@/models/question";
 import Quiz from "@/models/quiz";
 import User from "@/models/user";
 import { verifyToken } from "@/services/auth/auth";
