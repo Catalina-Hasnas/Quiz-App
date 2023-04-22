@@ -1,9 +1,9 @@
 import { AuthContext } from "@/pages/_app";
 import { useRouter } from "next/router";
-import { FormEvent, SetStateAction, useContext } from "react";
+import { SetStateAction, useContext } from "react";
 import { Formik, FormikHelpers } from "formik";
-import useSWR, { KeyedMutator } from "swr";
-import { QuestionModel, QuestionModelWithId } from "@/models/question";
+import { KeyedMutator } from "swr";
+import { QuestionModel } from "@/models/question";
 import OptionForm from "./OptionForm";
 import { QuizResponse } from "../index";
 
@@ -47,43 +47,6 @@ const QuestionForm = ({
   const router = useRouter();
   const { token } = useContext(AuthContext);
 
-  // const getQuestionById = async () => {
-  //   if (router.query.quizId) {
-  //     const result = await fetch(
-  //       `/api/edit_quiz/${router.query.quizId}/question/${questionId}`,
-  //       {
-  //         method: "GET",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //           authorization: token as string,
-  //         },
-  //       }
-  //     );
-
-  //     return result.json();
-  //   }
-  // };
-
-  // type Response = {
-  //   data: QuestionModel;
-  // };
-
-  // const { data, error, isLoading } = useSWR<Response>(
-  //   [
-  //     `/api/edit_quiz/${router.query.quizId}/question/${questionId}`,
-  //     questionId,
-  //   ],
-  //   getQuestionById
-  // );
-
-  // if (error) {
-  //   return <p>ERROR</p>;
-  // }
-
-  // if (isLoading || !router.query.quizId) {
-  //   return <p>...is loading</p>;
-  // }
-
   const handleSubmit = async (
     values: QuestionModel,
     actions: FormikHelpers<QuestionModel>
@@ -115,7 +78,6 @@ const QuestionForm = ({
         }
       } catch (error) {
         console.log(error);
-        // router.replace("/edit_quiz");
       }
     }
 

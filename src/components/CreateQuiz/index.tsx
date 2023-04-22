@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import { useContext, useState } from "react";
 import useSWR from "swr";
 import QuestionForm from "./Forms/QuestionForm";
+import Sidebar from "./Sidebar/Sidebar";
 
 export type QuizResponse = {
   data: {
@@ -40,7 +41,10 @@ const CreateQuiz = () => {
     error,
     isLoading,
     mutate: getQuizById,
-  } = useSWR<QuizResponse>([url, currentQuestionId], getQuestionById);
+  } = useSWR<QuizResponse>(
+    router.query.quizId ? [url, currentQuestionId] : null,
+    router.query.quizId ? getQuestionById : null
+  );
 
   if (error) {
     return <p>ERROR</p>;
@@ -63,15 +67,12 @@ const CreateQuiz = () => {
   return (
     <div>
       <button onClick={() => handleAddQuestionClick()}>Add Question</button>
-      <ul>
-        {data?.data.questions?.map((question, index) => {
-          return (
-            <li key={index} onClick={() => setCurrentQuestionId(question._id)}>
-              {question.title}
-            </li>
-          );
-        })}
-      </ul>
+      {data?.data.questions && (
+        <Sidebar
+          questions={data.data.questions}
+          setCurrentQuestionId={setCurrentQuestionId}
+        />
+      )}
       <QuestionForm
         currentQuestionId={currentQuestionId}
         setCurrentQuestionId={setCurrentQuestionId}
