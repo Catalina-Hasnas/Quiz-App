@@ -65,20 +65,23 @@ const CreateQuiz = () => {
   };
 
   return (
-    <div>
-      <button onClick={() => handleAddQuestionClick()}>Add Question</button>
-      {data?.data.questions && (
-        <Sidebar
-          questions={data.data.questions}
-          setCurrentQuestionId={setCurrentQuestionId}
-        />
-      )}
+    <div className="flex direction-row grow height-100">
       <QuestionForm
         currentQuestionId={currentQuestionId}
         setCurrentQuestionId={setCurrentQuestionId}
         initialValues={initialValues}
         getQuizById={getQuizById}
       />
+      <div className="sidebar surface-4 rad-shadow p-2 font-size-m">
+        {data?.data.questions && (
+          <Sidebar
+          questions={data.data.questions}
+          setCurrentQuestionId={setCurrentQuestionId}
+          currentQuestionId={currentQuestionId}
+          />
+          )}
+        <button className={`${currentQuestionId ? '' : 'selected'} width-100 p-1 sidebar-item surface-4 line-height-2`} onClick={() => handleAddQuestionClick()}>Add Question</button>
+      </div>
     </div>
   );
 };

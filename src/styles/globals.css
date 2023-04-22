@@ -6,6 +6,7 @@
 @import 'typography.css';
 @import 'utilities.css';
 @import 'colors.css';
+@import 'createquiz.css';
 
 @import url('https://unpkg.com/css.gg@2.0.0/icons/css/search.css');
 @import 'icons/gg-menu-left-alt.css';
@@ -30,10 +31,9 @@
     var(--brand-lightness)
   );
 
+  --accent-hsl: var(--accent-hue) var(--accent-saturation) var(--accent-lightness);
   --accent: hsl(
-    var(--accent-hue)
-    var(--accent-saturation)
-    var(--accent-lightness)
+    var(--accent-hsl)
   );
 
   --surface2-hsl: var(--brand-hue) 25% 15%;
@@ -73,7 +73,7 @@
   --failure: hsl(var(--failure-hsl));
 
   --surface-shadow: var(--brand-hue) 50% 3%;
-  --shadow-strength: .8;
+  --shadow-strength: .2;
 }
 
 * {
@@ -85,6 +85,7 @@
 html {
   font-size: 16px;
   line-height: 2;
+  color-scheme: dark;
 }
 
 body {
@@ -102,6 +103,7 @@ body {
 
 main {
   width: var(--container-width);
+  grid-area: main;
 }
 
 a {
@@ -113,6 +115,21 @@ a {
 /*******************************/
 /*         UTILITIES           */
 /*******************************/
+
+.btn {
+  cursor: pointer;
+  border: none;
+  border-radius: .25rem;
+}
+
+.btn.submit {
+  background-color: hsl(var(--success-hsl) / 0.8);
+}
+
+.btn.info {
+  background-color: hsl(var(--info-hsl) / 0.8);
+}
+
 .btn-link {
   background-color: transparent;
   border: none;
@@ -125,6 +142,8 @@ a:hover,
 a:focus {
   text-decoration: underline;
 }
+
+
 
 
 /*******************************/
@@ -165,4 +184,14 @@ a:focus {
 
 nav {
   width: var(--container-width);
+}
+
+.root {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: grid;
+  grid-template: 
+    'header'
+    'main';
+  grid-template-rows: auto 1fr;
 }

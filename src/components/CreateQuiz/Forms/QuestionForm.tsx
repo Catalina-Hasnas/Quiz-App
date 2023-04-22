@@ -109,7 +109,7 @@ const QuestionForm = ({
   };
 
   return (
-    <>
+    <div className="grow-1 p-2">
       <Formik
         initialValues={initialValues}
         onSubmit={handleSubmit}
@@ -124,7 +124,7 @@ const QuestionForm = ({
           handleSubmit,
           setValues,
         }) => (
-          <form onSubmit={handleSubmit}>
+          <form className="flex direction-column font-size-m gap-3" onSubmit={handleSubmit}>
             <label htmlFor="firstName">Title</label>
             <input
               type="text"
@@ -153,11 +153,11 @@ const QuestionForm = ({
               <OptionForm values={values} setValues={setValues} />
             )}
 
-            <button type="submit">Submit</button>
+            <button className="align-self-center line-height-2 p-x-2 m-y-2 btn submit" type="submit">Submit</button>
           </form>
         )}
       </Formik>
-    </>
+    </div>
   );
 };
 

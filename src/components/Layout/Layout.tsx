@@ -7,7 +7,7 @@ interface ILayoutProps {
 
 const Layout = ({ children }: ILayoutProps) => {
   return (
-    <>
+    <div className="root">
       <Head>
         <title>Quiz App</title>
         <meta name="description" content="Quiz app" />
@@ -16,7 +16,7 @@ const Layout = ({ children }: ILayoutProps) => {
       </Head>
       <MainNavigation />
       <main className="margin-inline-auto">{children}</main>
-    </>
+    </div>
   );
 };
 

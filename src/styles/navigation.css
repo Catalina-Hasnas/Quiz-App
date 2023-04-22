@@ -2,6 +2,10 @@
   display: none;
 }
 
+.header {
+  grid-area: header;
+}
+
 @media (max-width: 35em) {
   .header .menu-button {
     display: block;
