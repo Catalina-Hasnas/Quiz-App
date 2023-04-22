@@ -1,6 +1,5 @@
-import { UserModel } from "@/models/types";
+import { UserModel } from "@/models/user";
 import { JwtPayload } from "jsonwebtoken";
-import { Document } from "mongoose";
 
 export interface IUserToken extends JwtPayload {
   id: string;
@@ -18,5 +17,3 @@ export interface IAuthResponse {
   error: HttpError | null;
   data: IAuthSuccessful | null;
 }
-
-export type UserDocument = Document & UserModel;
