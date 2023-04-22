@@ -34,6 +34,11 @@
 }
 
 /* Spacing */
+
+.m-y-2 {
+  margin-block: calc(var(--base-spacing) * 2);
+}
+
 .m-1 {
   margin: var(--base-spacing);
 }

@@ -1,9 +1,8 @@
-import { User } from "@/models/user";
-import { getToken, hashPassword } from "@/services/auth";
+import User, { UserModel } from "@/models/user";
+import { getToken, hashPassword } from "@/services/auth/auth";
 import { connectToDatabase } from "@/services/database.service";
-import { IAuthResponse, UserDocument } from "@/services/auth/types";
+import { IAuthResponse } from "@/services/auth/types";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { UserModel } from "@/models/types";
 
 async function handler(
   req: NextApiRequest,
@@ -32,7 +31,7 @@ async function handler(
 
   await connectToDatabase();
 
-  let existingUser: UserDocument | null = null;
+  let existingUser;
   try {
     existingUser = await User.findOne({ email: email });
   } catch (err) {

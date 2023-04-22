@@ -1,4 +1,4 @@
-import { createUser, loginUser } from "@/services/auth";
+import { createUser, loginUser } from "@/services/auth/auth";
 import { useRouter } from "next/router";
 import { FormEvent, useContext, useRef, useState } from "react";
 import classes from "./login.module.css";
