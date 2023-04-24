@@ -9,7 +9,10 @@ const MainNavigation = () => {
 
   return (
     <header className="header rad-shadow justify-space-around font-size-m font-weight-600 p-1">
-      <button className="p-1 btn-link text-1 menu-button" onClick={() => setOpen(!isOpen)}>
+      <button
+        className="p-1 btn-link text-1 menu-button"
+        onClick={() => setOpen(!isOpen)}
+      >
         <i className="gg-menu-left-alt"></i>
       </button>
       <nav className="margin-inline-auto" data-visible={`${isOpen}`}>
@@ -22,15 +25,24 @@ const MainNavigation = () => {
               <Link href="/auth">Login</Link>
             </li>
           )}
+          <li>
+            <Link href="/edit_quiz">Create quiz</Link>
+          </li>
           {token && (
             <>
               <li>
                 <Link href="/profile">Profile</Link>
               </li>
               <li>
-                <button className="font-size-m font-weight-600 text-1 btn-link  " onClick={() => removeUserInfoFromLocalStorage()}>
+                <button
+                  className="font-size-m font-weight-600 text-1 btn-link  "
+                  onClick={() => removeUserInfoFromLocalStorage()}
+                >
                   Logout
                 </button>
+              </li>
+              <li>
+                <Link href="/my_quizzes">My Quizzes</Link>
               </li>
             </>
           )}
