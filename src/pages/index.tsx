@@ -60,13 +60,7 @@ export default function Home() {
           <h1 className="text-2">Text2</h1>
         </div>
       </div>
-      <main style={{ display: "flex", flexDirection: "column" }}>
-        {/* <Link href="/login">Log in</Link>
-        <Link href="/signup">Sign up</Link>
-        <Link href="/profile">My profile</Link>
-        <Link href="/quizzes">See all quizzes</Link>
-        <Link href="/my_quizzes">My quizzes</Link> */}
-      </main>
+      <main style={{ display: "flex", flexDirection: "column" }}></main>
     </>
   );
 }
