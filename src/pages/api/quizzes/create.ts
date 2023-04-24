@@ -14,7 +14,7 @@ async function handler(
     return;
   }
 
-  const { title } = req.body;
+  const { title, description } = req.body;
 
   const token = req?.headers?.authorization?.split(" ")[1];
 
@@ -47,6 +47,7 @@ async function handler(
 
   const newQuiz = new Quiz({
     title,
+    description,
     creator_id: userId,
     questions: [],
   });

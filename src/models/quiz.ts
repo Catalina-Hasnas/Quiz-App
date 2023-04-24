@@ -4,6 +4,7 @@ import { QuestionModelWithId, questionSchema } from "./question";
 
 export interface QuizModel {
   title: string;
+  description: string;
   questions: QuestionModelWithId[];
   creator_id?: string;
 }
@@ -14,6 +15,7 @@ export interface QuizModelWithId extends QuizModel {
 
 const quizSchema = new Schema<QuizModel>({
   title: { type: String, required: true },
+  description: { type: String, required: true },
   questions: [questionSchema],
   creator_id: { type: ObjectId, required: true, ref: "User" },
 });
