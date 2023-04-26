@@ -35,9 +35,12 @@ const MyQuizPage = () => {
 
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
-      <div>My Quiz page</div>
       {isLoading && <p>is loading...</p>}
-      {data && <p> {data.data.quiz.description} </p>}
+      {data && (
+        <>
+          <p> {data.data.quiz.title} </p> <p> {data.data.quiz.description} </p>
+        </>
+      )}
       <Link href={`/edit_quiz/${router.query.myquizid}`}>Edit/ View quiz</Link>
       <Link href={`/my_quizzes/${router.query.myquizid}/responses`}>
         View Responses
