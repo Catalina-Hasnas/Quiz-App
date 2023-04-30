@@ -3,30 +3,27 @@ import useSWR from "swr";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useContext } from "react";
-import { QuizModelWithId } from "@/models/quiz";
-
-interface MyQuizResponse {
-  data: {
-    quiz: QuizModelWithId;
-  };
-}
+import { QuizByIdResponse } from "@/services/quiz/types";
 
 const MyQuizPage = () => {
   const router = useRouter();
   const { token } = useContext(AuthContext);
 
   const getMyQuizzes = async () => {
-    const result = await fetch(`/api/quizzes/${router.query.myquizid}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        authorization: token as string,
-      },
-    });
+    const result = await fetch(
+      `/api/quizzes/${router.query.myquizid}?filter=mine`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: token as string,
+        },
+      }
+    );
     return result.json();
   };
 
-  const { data, isLoading, error } = useSWR<MyQuizResponse>(
+  const { data, isLoading, error } = useSWR<QuizByIdResponse>(
     token && router.query.myquizid
       ? [`/api/quizzes/${router.query.myquizid}`]
       : null,

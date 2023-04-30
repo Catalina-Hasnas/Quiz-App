@@ -6,11 +6,12 @@ export interface QuizModel {
   title: string;
   description: string;
   questions: QuestionModelWithId[];
-  creator_id?: string;
+  creator_id: ObjectId;
 }
 
-export interface QuizModelWithId extends QuizModel {
+export interface QuizModelWithId extends Omit<QuizModel, "creator_id"> {
   _id: string;
+  creator_id: string;
 }
 
 const quizSchema = new Schema<QuizModel>({

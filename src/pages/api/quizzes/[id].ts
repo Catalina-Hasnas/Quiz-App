@@ -8,29 +8,33 @@ import type { NextApiRequest, NextApiResponse } from "next";
 async function handler(req: NextApiRequest, res: NextApiResponse<unknown>) {
   const quizId = req.query.id;
 
-  const token = req?.headers?.authorization?.split(" ")[1];
+  const filter = req.query.filter;
 
-  const decodedToken = await verifyToken(token || "");
+  if (filter) {
+    const token = req?.headers?.authorization?.split(" ")[1];
 
-  const userId = (decodedToken as IUserToken).id;
+    const decodedToken = await verifyToken(token || "");
 
-  await connectToDatabase();
+    const userId = (decodedToken as IUserToken).id;
 
-  let existingUser;
-  try {
-    existingUser = await User.findById(userId);
-  } catch (err) {
-    return res.status(500).json({
-      error: {
-        message: err,
-      },
-    });
-  }
+    await connectToDatabase();
 
-  if (!existingUser) {
-    return res.status(401).json({
-      error: "You're not authorized to update a quiz.",
-    });
+    let existingUser;
+    try {
+      existingUser = await User.findById(userId);
+    } catch (err) {
+      return res.status(500).json({
+        error: {
+          message: err,
+        },
+      });
+    }
+
+    if (!existingUser) {
+      return res.status(401).json({
+        error: "You're not authorized to update a quiz.",
+      });
+    }
   }
 
   let existingQuiz;
