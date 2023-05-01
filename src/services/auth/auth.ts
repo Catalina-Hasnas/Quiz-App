@@ -16,7 +16,7 @@ export const verifyPassword = async (
 
 export const getToken = async (id: string, email: string) => {
   const token = await jwt.sign(
-    { id: id, email: email },
+    { email, id },
     process.env.ACCESS_TOKEN_SECRET as Secret,
     { expiresIn: "3h" }
   );
@@ -31,10 +31,14 @@ export const verifyToken = async (token: string) => {
   return userToken;
 };
 
-export const createUser = async (email: string, password: string) => {
+export const createUser = async (
+  email: string,
+  password: string,
+  name: string
+) => {
   const response = await fetch("/api/auth/signup", {
     method: "POST",
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify({ email, password, name }),
     headers: {
       "Content-Type": "application/json",
     },

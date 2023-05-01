@@ -1,5 +1,5 @@
 import { QuestionModel } from "@/models/question";
-import { SetStateAction, useRef } from "react";
+import { Fragment, SetStateAction, useRef } from "react";
 
 interface OptionFormProps {
   values: QuestionModel;
@@ -38,10 +38,9 @@ const OptionForm = ({ values, setValues }: OptionFormProps) => {
     <div className="flex direction-column m-y-2">
       <div className="options grid gap-1">
         {values.options?.map((option, index) => (
-          <>
+          <Fragment key={index}>
             <input
               className="checkbox m-1 m-y-2"
-              key={index}
               type="checkbox"
               checked={option.isRightAnswer}
               onChange={() => handleCheckboxChange(index)}
@@ -53,10 +52,8 @@ const OptionForm = ({ values, setValues }: OptionFormProps) => {
                 )
               }
             />
-            <p className="p-1 word-break-all" key={index}>
-              {option.value}
-            </p>
-          </>
+            <p className="p-1 word-break-all">{option.value}</p>
+          </Fragment>
         ))}
       </div>
       <div className="flex">

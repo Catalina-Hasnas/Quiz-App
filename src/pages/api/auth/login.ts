@@ -12,7 +12,7 @@ async function handler(
     return;
   }
 
-  const { email, password }: UserModel = req.body;
+  const { email, password }: Omit<UserModel, "name"> = req.body;
 
   await connectToDatabase();
 

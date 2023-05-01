@@ -5,8 +5,16 @@ import { GetStaticProps } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
 
-interface QuizzesPageProps {
-  data: QuizModelWithId[];
+export interface QuizPageData
+  extends Omit<QuizModelWithId, "creator_id" | "questions" | "status"> {
+  creator_id: {
+    _id: string;
+    name: string;
+  };
+}
+
+export interface QuizzesPageProps {
+  data: QuizPageData[];
   currentPage: number;
   totalPages: number;
 }
@@ -65,13 +73,15 @@ export const getStaticProps: GetStaticProps<QuizzesPageProps> = async ({
 
   const startIndex = currentPage * ITEMS_PER_PAGE;
 
-  const docs: QuizModelWithId[] = await Quiz.find({})
+  const docs = await Quiz.find({ status: "published" })
+    .select("-questions -status")
     .sort({ _id: -1 })
     .skip(startIndex)
     .limit(ITEMS_PER_PAGE)
+    .populate("creator_id", "name")
     .exec();
 
-  const data = JSON.parse(JSON.stringify(docs)) as QuizModelWithId[];
+  const data = JSON.parse(JSON.stringify(docs)) as QuizPageData[];
 
   return {
     props: {
@@ -81,8 +91,6 @@ export const getStaticProps: GetStaticProps<QuizzesPageProps> = async ({
     },
     revalidate: currentPage === 0 ? 1 : undefined,
   };
-
-  // { status: "published" }
 };
 
 export default QuizzesPage;

@@ -1,13 +1,7 @@
-import { QuizModelWithId } from "@/models/quiz";
+import { QuizPageData } from "@/pages/quizzes/page/[page]";
 import Link from "next/link";
 
-const QuizCard = ({
-  _id,
-  creator_id,
-  description,
-  title,
-  status,
-}: Omit<QuizModelWithId, "questions">) => {
+const QuizCard = ({ _id, creator_id, description, title }: QuizPageData) => {
   return (
     <div
       style={{
@@ -23,8 +17,7 @@ const QuizCard = ({
       <button style={{ padding: "5px" }} className="success">
         <Link href={`/quizzes/${_id}`}>OPEN</Link>
       </button>
-      <p> status: {status}</p>
-      <p> Created by: {creator_id} </p>
+      <p> Created by: {creator_id.name} </p>
     </div>
   );
 };
