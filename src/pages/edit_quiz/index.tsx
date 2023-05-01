@@ -33,17 +33,36 @@ const CreateQuiz = () => {
   };
 
   return (
-    <form onSubmit={(event) => handleSubmit(event)}>
-      <label htmlFor="title"> Title </label>
-      <input name="title" id="title" type="text" ref={titleInputRef} required />
-      <label htmlFor="title"> Description </label>
+    <form
+      className="flex direction-column font-size-m m-y-2"
+      onSubmit={(event) => handleSubmit(event)}
+    >
+      <label className="font-size-l" htmlFor="title">
+        Title
+      </label>
+      <input
+        className="align-self-baseline"
+        name="title"
+        id="title"
+        type="text"
+        ref={titleInputRef}
+        required
+      />
+      <label className="font-size-l" htmlFor="title">
+        Description
+      </label>
       <textarea
         name="description"
         id="description"
         ref={descriptionInputRef}
         required
       />
-      <button type="submit"> SUBMIT </button>
+      <button
+        className="align-self-baseline line-height-2 p-x-2 m-y-2 btn submit"
+        type="submit"
+      >
+        Submit
+      </button>
     </form>
   );
 };

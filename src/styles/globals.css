@@ -1,19 +1,19 @@
 /* ? https://github.com/necolas/normalize.css */
 /* ? small CSS file that provides better cross-browser consistency in the default styling of HTML elements. */
-@import 'normalize.css';
+@import "normalize.css";
 
-@import 'navigation.css';
-@import 'typography.css';
-@import 'utilities.css';
-@import 'colors.css';
-@import 'createquiz.css';
+@import "navigation.css";
+@import "typography.css";
+@import "utilities.css";
+@import "colors.css";
+@import "createquiz.css";
 
-@import url('https://unpkg.com/css.gg@2.0.0/icons/css/search.css');
-@import 'icons/gg-menu-left-alt.css';
+@import url("https://unpkg.com/css.gg@2.0.0/icons/css/search.css");
+@import "icons/gg-menu-left-alt.css";
 
 :root {
   --max-width: 85rem;
-  --base-spacing: .75rem;
+  --base-spacing: 0.75rem;
 
   --container-width: min(90%, var(--max-width));
 
@@ -25,22 +25,21 @@
   --accent-saturation: 100%;
   --accent-lightness: 45%;
 
-  --brand: hsl(
-    var(--brand-hue)
-    var(--brand-saturation)
-    var(--brand-lightness)
-  );
+  --brand: hsl(var(--brand-hue) var(--brand-saturation) var(--brand-lightness));
 
-  --accent-hsl: var(--accent-hue) var(--accent-saturation) var(--accent-lightness);
-  --accent: hsl(
-    var(--accent-hsl)
-  );
+  --accent-hsl: var(--accent-hue) var(--accent-saturation)
+    var(--accent-lightness);
+  --accent: hsl(var(--accent-hsl));
 
+  --surface1-hsl: var(--brand-hue) 25% 10%;
   --surface2-hsl: var(--brand-hue) 25% 15%;
-  --surface1: hsl(var(--brand-hue) 25% 10%);
+  --surface3-hsl: var(--brand-hue) 20% 20%;
+  --surface4-hsl: var(--brand-hue) 25% 25%;
+
+  --surface1: hsl(var(--surface1-hsl));
   --surface2: hsl(var(--surface2-hsl));
-  --surface3: hsl(var(--brand-hue) 20% 20%);
-  --surface4: hsl(var(--brand-hue) 25% 25%);
+  --surface3: hsl(var(--surface3-hsl));
+  --surface4: hsl(var(--surface4-hsl));
 
   --text1: hsl(var(--brand-hue) 15% 85%);
   --text2: hsl(var(--brand-hue) 5% 65%);
@@ -49,31 +48,25 @@
   --saturation: var(--brand-saturation);
 
   --info-hue: 203;
-  --info-hsl: var(--info-hue)
-      var(--saturation)
-      var(--lightness);
+  --info-hsl: var(--info-hue) var(--saturation) var(--lightness);
   --info: hsl(var(--info-hsl));
 
   --success-hue: 120;
-  --success-hsl: var(--success-hue)
-      var(--saturation)
-      var(--lightness);
+  --success-hsl: var(--success-hue) var(--saturation) var(--lightness);
   --success: hsl(var(--success-hsl));
 
   --warning-hue: 40;
-  --warning-hsl: var(--warning-hue)
-      var(--saturation)
-      var(--lightness);
+  --warning-hsl: var(--warning-hue) var(--saturation) var(--lightness);
   --warning: hsl(var(--warning-hsl));
 
   --failure-hue: 2;
-  --failure-hsl: var(--failure-hue)
-      var(--saturation)
-      var(--lightness);
+  --failure-hsl: var(--failure-hue) var(--saturation) var(--lightness);
   --failure: hsl(var(--failure-hsl));
 
   --surface-shadow: var(--brand-hue) 50% 3%;
-  --shadow-strength: .2;
+  --shadow-strength: 0.2;
+
+  --border-radius: 0.25rem;
 }
 
 * {
@@ -90,11 +83,7 @@ html {
 
 body {
   color: var(--text1);
-  background: linear-gradient(
-      170deg,
-      transparent,
-      var(--surface1)
-    )
+  background: linear-gradient(170deg, transparent, var(--surface1))
     var(--surface2);
   background-repeat: no-repeat;
   background-attachment: fixed;
@@ -111,7 +100,6 @@ a {
   text-decoration: none;
 }
 
-
 /*******************************/
 /*         UTILITIES           */
 /*******************************/
@@ -119,7 +107,7 @@ a {
 .btn {
   cursor: pointer;
   border: none;
-  border-radius: .25rem;
+  border-radius: var(--border-radius);
 }
 
 .btn.submit {
@@ -142,9 +130,6 @@ a:hover,
 a:focus {
   text-decoration: underline;
 }
-
-
-
 
 /*******************************/
 /*         SEARCH FIELD        */
@@ -190,8 +175,56 @@ nav {
   min-height: 100vh;
   min-height: 100dvh;
   display: grid;
-  grid-template: 
-    'header'
-    'main';
+  grid-template:
+    "header"
+    "main";
   grid-template-rows: auto 1fr;
+}
+
+/*******************************/
+/*         FORMS               */
+/*******************************/
+
+input,
+select,
+textarea {
+  padding-inline: var(--base-spacing);
+  padding-block: calc(var(--base-spacing) / 2);
+  border-color: transparent;
+  border-radius: var(--border-radius);
+  background-color: hsl(var(--surface4-hsl) / 0.5);
+}
+
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: solid var(--accent);
+  outline-width: 0.1rem;
+  background-color: hsl(var(--surface4-hsl));
+}
+
+.options {
+  grid-template-columns: min-content minmax(100px, auto);
+  grid-auto-rows: minmax(2.5rem, auto);
+}
+
+.options .checkbox {
+  min-width: 1rem;
+  aspect-ratio: 1;
+  justify-self: start;
+  align-self: start;
+}
+
+.options .checkbox:checked + p {
+  background-color: hsl(var(--success-hsl) / 0.2);
+}
+
+textarea {
+  background-color: hsl(var(--surface4-hsl) / 0.5);
+  border-radius: var(--border-radius);
+  border: none;
+  max-width: 100%;
+  width: min(35em, 100%);
+  min-height: 12rem;
+  /* resize: vertical; */
 }

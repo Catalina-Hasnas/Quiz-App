@@ -5,8 +5,8 @@
 
 .sidebar-item {
   cursor: pointer;
-  border: .35rem solid var(--surface4);
-  border-radius: .25rem;
+  border: 0.35rem solid var(--surface4);
+  border-radius: var(--border-radius);
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
