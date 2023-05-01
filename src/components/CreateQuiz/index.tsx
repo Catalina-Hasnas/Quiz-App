@@ -75,12 +75,19 @@ const CreateQuiz = () => {
       <div className="sidebar surface-4 rad-shadow p-2 font-size-m">
         {data?.data.questions && (
           <Sidebar
-          questions={data.data.questions}
-          setCurrentQuestionId={setCurrentQuestionId}
-          currentQuestionId={currentQuestionId}
+            questions={data.data.questions}
+            setCurrentQuestionId={setCurrentQuestionId}
+            currentQuestionId={currentQuestionId}
           />
-          )}
-        <button className={`${currentQuestionId ? '' : 'selected'} width-100 p-1 sidebar-item surface-4 line-height-2`} onClick={() => handleAddQuestionClick()}>Add Question</button>
+        )}
+        <button
+          className={`${
+            currentQuestionId ? "" : "selected"
+          } width-100 p-1 sidebar-item surface-4 line-height-2`}
+          onClick={() => handleAddQuestionClick()}
+        >
+          Add Question
+        </button>
       </div>
     </div>
   );

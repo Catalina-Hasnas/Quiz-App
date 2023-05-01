@@ -8,10 +8,19 @@ import type { NextApiRequest, NextApiResponse } from "next";
 
 type InputObject = { [key: string]: any };
 
-const formatObject = (obj: InputObject): { [key: string]: any } => {
+interface FormatObjectParams {
+  obj: InputObject;
+  editQuestion: Boolean;
+}
+
+const formatObject = ({ obj, editQuestion }: FormatObjectParams) => {
   const formattedObj: { [key: string]: any } = {};
   for (const key in obj) {
-    formattedObj[`questions.$.${key}`] = obj[key];
+    if (editQuestion) {
+      formattedObj[`questions.$.${key}`] = obj[key];
+      return formattedObj;
+    }
+    formattedObj[key] = obj[key];
   }
   return formattedObj;
 };
@@ -116,9 +125,39 @@ async function handler(req: NextApiRequest, res: NextApiResponse<unknown>) {
     }
 
     if (req.method === "PATCH") {
+      if (questionId) {
+        Quiz.findOneAndUpdate(
+          { _id: quizId, "questions._id": questionId },
+          { $set: formatObject({ obj: req.body, editQuestion: true }) },
+          { new: true }
+        )
+          .then((quiz) => {
+            if (!quiz) {
+              return res.status(404).json({
+                error: {
+                  message: `Question with ID ${questionId} not found in Quiz with ID ${quizId}`,
+                },
+              });
+            }
+            const question = quiz.questions.find(
+              (question: QuestionModelWithId) =>
+                question._id.toString() === questionId
+            );
+            return res.status(200).json({
+              data: question,
+            });
+          })
+          .catch((err) => {
+            return res.status(500).json({
+              error: {
+                message: `Couldn't update question with ID ${questionId} in Quiz with ID ${quizId}: ${err}`,
+              },
+            });
+          });
+      }
       Quiz.findOneAndUpdate(
-        { _id: quizId, "questions._id": questionId },
-        { $set: formatObject(req.body) },
+        { _id: quizId },
+        { $set: formatObject({ obj: req.body, editQuestion: false }) },
         { new: true }
       )
         .then((quiz) => {
@@ -129,18 +168,14 @@ async function handler(req: NextApiRequest, res: NextApiResponse<unknown>) {
               },
             });
           }
-          const question = quiz.questions.find(
-            (question: QuestionModelWithId) =>
-              question._id.toString() === questionId
-          );
-          return res.status(201).json({
-            data: question,
+          return res.status(200).json({
+            data: quiz,
           });
         })
         .catch((err) => {
-          return res.status(404).json({
+          return res.status(500).json({
             error: {
-              message: `Couldn't update question with ID ${questionId} in Quiz with ID ${quizId}: ${err}`,
+              message: `Couldn't update quiz with id ${quizId}: ${err}`,
             },
           });
         });

@@ -11,7 +11,7 @@ const MyQuizPage = () => {
 
   const getMyQuizzes = async () => {
     const result = await fetch(
-      `/api/quizzes/${router.query.myquizid}?filter=mine`,
+      `/api/quizzes/${router.query.myquizid}?filter=user_quizzes`,
       {
         method: "GET",
         headers: {
@@ -30,6 +30,28 @@ const MyQuizPage = () => {
     token && router.query.myquizid ? getMyQuizzes : null
   );
 
+  const handlePublishClick = async () => {
+    try {
+      const result = await fetch(`/api/edit_quiz/${router.query.myquizid}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: token as string,
+        },
+        body: JSON.stringify({ status: "published" }),
+      });
+      if (result.ok) {
+        const data = await result.json();
+        console.log(data);
+      } else {
+        const errorData = await result.json();
+        throw new Error(errorData.error.message);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
       {isLoading && <p>is loading...</p>}
@@ -39,6 +61,11 @@ const MyQuizPage = () => {
         </>
       )}
       <Link href={`/edit_quiz/${router.query.myquizid}`}>Edit/ View quiz</Link>
+      {data?.data.quiz.status === "draft" && (
+        <button onClick={() => handlePublishClick()} className="p-1 btn">
+          Publish
+        </button>
+      )}
       <Link href={`/my_quizzes/${router.query.myquizid}/responses`}>
         View Responses
       </Link>

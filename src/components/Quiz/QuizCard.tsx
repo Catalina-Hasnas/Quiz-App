@@ -1,13 +1,13 @@
+import { QuizModelWithId } from "@/models/quiz";
 import Link from "next/link";
 
-interface QuizCardProps {
-  _id: string;
-  creator_id: string;
-  description: string;
-  title: string;
-}
-
-const QuizCard = ({ _id, creator_id, description, title }: QuizCardProps) => {
+const QuizCard = ({
+  _id,
+  creator_id,
+  description,
+  title,
+  status,
+}: Omit<QuizModelWithId, "questions">) => {
   return (
     <div
       style={{
@@ -23,6 +23,7 @@ const QuizCard = ({ _id, creator_id, description, title }: QuizCardProps) => {
       <button style={{ padding: "5px" }} className="success">
         <Link href={`/quizzes/${_id}`}>OPEN</Link>
       </button>
+      <p> status: {status}</p>
       <p> Created by: {creator_id} </p>
     </div>
   );

@@ -6,6 +6,7 @@ import { KeyedMutator } from "swr";
 import { QuestionModel } from "@/models/question";
 import OptionForm from "./OptionForm";
 import { QuizResponse } from "../index";
+import Link from "next/link";
 
 interface QuestionFormProps {
   currentQuestionId: string | null;
@@ -124,7 +125,10 @@ const QuestionForm = ({
           handleSubmit,
           setValues,
         }) => (
-          <form className="flex direction-column font-size-m gap-3" onSubmit={handleSubmit}>
+          <form
+            className="flex direction-column font-size-m gap-3"
+            onSubmit={handleSubmit}
+          >
             <label htmlFor="firstName">Title</label>
             <input
               type="text"
@@ -153,10 +157,18 @@ const QuestionForm = ({
               <OptionForm values={values} setValues={setValues} />
             )}
 
-            <button className="align-self-center line-height-2 p-x-2 m-y-2 btn submit" type="submit">Submit</button>
+            <button
+              className="align-self-center line-height-2 p-x-2 m-y-2 btn submit"
+              type="submit"
+            >
+              Submit
+            </button>
           </form>
         )}
       </Formik>
+      <Link href="/my_quizzes">
+        <button className="p-1 btn"> Save as Draft </button>
+      </Link>
     </div>
   );
 };

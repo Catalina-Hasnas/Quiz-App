@@ -50,6 +50,7 @@ async function handler(
     description,
     creator_id: userId,
     questions: [],
+    status: "draft",
   });
 
   let createdQuiz;
