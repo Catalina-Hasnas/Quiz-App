@@ -1,7 +1,12 @@
-
 /*******************************/
 /*         UTILITIES           */
 /*******************************/
+
+/* Grid */
+.grid {
+  display: grid;
+  gap: var(--gap, var(--base-spacing));
+}
 
 /* Flex */
 .flex {
@@ -46,20 +51,20 @@
 }
 /* Spacing */
 
-.m-y-2 {
-  margin-block: calc(var(--base-spacing) * 2);
+.m-05 {
+  margin: calc(var(--base-spacing) / 2);
 }
 
 .m-1 {
   margin: var(--base-spacing);
 }
 
-.m-2 {
-  margin: calc(var(--base-spacing) * 2);
+.m-y-2 {
+  margin-block: calc(var(--base-spacing) * 2);
 }
 
-.p-x-2 {
-  padding-inline: calc(var(--base-spacing) * 2);
+.m-2 {
+  margin: calc(var(--base-spacing) * 2);
 }
 
 .p-1 {
@@ -70,8 +75,16 @@
   padding: calc(var(--base-spacing) * 2);
 }
 
+.p-x-2 {
+  padding-inline: calc(var(--base-spacing) * 2);
+}
+
 .gap-0 {
   --gap: 0;
+}
+
+.gap-1 {
+  --gap: var(--base-spacing);
 }
 
 .gap-2 {
@@ -79,7 +92,7 @@
 }
 
 .gap-3 {
-  --gap: calc(var(--base-spacing) * 2);
+  --gap: calc(var(--base-spacing) * 3);
 }
 
 /* Lists */

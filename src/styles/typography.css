@@ -20,3 +20,7 @@
 .line-height-2 {
   line-height: 2;
 }
+
+.word-break-all {
+  word-break: break-all;
+}
