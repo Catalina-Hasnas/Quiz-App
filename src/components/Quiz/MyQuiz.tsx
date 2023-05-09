@@ -9,7 +9,7 @@ const MyQuiz = () => {
   const router = useRouter();
   const { token } = useContext(AuthContext);
 
-  const getMyQuizzes = async () => {
+  const getMyQuiz = async () => {
     const result = await fetch(
       `/api/quizzes/${router.query.myquizid}?filter=user_quizzes`,
       {
@@ -23,11 +23,15 @@ const MyQuiz = () => {
     return result.json();
   };
 
-  const { data, isLoading, error } = useSWR<QuizByIdResponse>(
+  const {
+    data,
+    isLoading,
+    mutate: getMyQuizById,
+  } = useSWR<QuizByIdResponse>(
     token && router.query.myquizid
       ? [`/api/quizzes/${router.query.myquizid}`]
       : null,
-    token && router.query.myquizid ? getMyQuizzes : null
+    token && router.query.myquizid ? getMyQuiz : null
   );
 
   const handlePublishClick = async () => {
@@ -41,8 +45,7 @@ const MyQuiz = () => {
         body: JSON.stringify({ status: "published" }),
       });
       if (result.ok) {
-        const data = await result.json();
-        console.log(data);
+        await getMyQuizById();
       } else {
         const errorData = await result.json();
         throw new Error(errorData.error.message);
