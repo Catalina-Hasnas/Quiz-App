@@ -7,10 +7,7 @@ import { useRouter } from "next/router";
 
 export interface QuizPageData
   extends Omit<QuizModelWithId, "creator_id" | "questions" | "status"> {
-  creator_id: {
-    _id: string;
-    name: string;
-  };
+  creator: string;
 }
 
 export interface QuizzesPageProps {
@@ -73,13 +70,36 @@ export const getStaticProps: GetStaticProps<QuizzesPageProps> = async ({
 
   const startIndex = currentPage * ITEMS_PER_PAGE;
 
-  const docs = await Quiz.find({ status: "published" })
-    .select("-questions -status")
-    .sort({ _id: -1 })
-    .skip(startIndex)
-    .limit(ITEMS_PER_PAGE)
-    .populate("creator_id", "name")
-    .exec();
+  const docs = await Quiz.aggregate([
+    {
+      $match: { status: "published" },
+    },
+    {
+      $sort: { _id: -1 },
+    },
+    {
+      $skip: startIndex,
+    },
+    {
+      $limit: ITEMS_PER_PAGE,
+    },
+    {
+      $lookup: {
+        from: "users",
+        localField: "creator_id",
+        foreignField: "_id",
+        as: "creator",
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+        creator: { $arrayElemAt: ["$creator.name", 0] },
+        title: 1,
+        description: 1,
+      },
+    },
+  ]);
 
   const data = JSON.parse(JSON.stringify(docs)) as QuizPageData[];
 

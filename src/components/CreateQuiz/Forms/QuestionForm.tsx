@@ -52,6 +52,7 @@ const QuestionForm = ({
     values: QuestionModel,
     actions: FormikHelpers<QuestionModel>
   ) => {
+    // create new questions
     if (!currentQuestionId) {
       try {
         const result = await fetch(`/api/edit_quiz/${router.query.quizId}`, {
@@ -82,6 +83,7 @@ const QuestionForm = ({
       }
     }
 
+    // edit currenct question
     if (currentQuestionId) {
       try {
         const result = await fetch(

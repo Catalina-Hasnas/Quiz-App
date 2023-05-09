@@ -1,7 +1,7 @@
 import { QuizPageData } from "@/pages/quizzes/page/[page]";
 import Link from "next/link";
 
-const QuizCard = ({ _id, creator_id, description, title }: QuizPageData) => {
+const QuizCard = ({ _id, creator, description, title }: QuizPageData) => {
   return (
     <div
       style={{
@@ -17,7 +17,7 @@ const QuizCard = ({ _id, creator_id, description, title }: QuizPageData) => {
       <button style={{ padding: "5px" }} className="success">
         <Link href={`/quizzes/${_id}`}>OPEN</Link>
       </button>
-      <p> Created by: {creator_id.name} </p>
+      <p> Created by: {creator} </p>
     </div>
   );
 };
