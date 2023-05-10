@@ -6,7 +6,7 @@ export interface IUserToken extends JwtPayload {
   email: string;
 }
 
-interface IAuthSuccessful extends Omit<UserModel, "password"> {
+interface IAuthSuccessful extends Omit<UserModel, "password" | "name"> {
   id: string;
   token: string;
 }

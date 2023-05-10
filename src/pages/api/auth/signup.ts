@@ -12,7 +12,7 @@ async function handler(
     return;
   }
 
-  const { email, password }: UserModel = req.body;
+  const { email, password, name }: UserModel = req.body;
 
   if (
     !email ||
@@ -54,6 +54,7 @@ async function handler(
   const createdUser = new User({
     email,
     password: hashedPassword,
+    name,
   });
 
   try {

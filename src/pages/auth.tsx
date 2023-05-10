@@ -8,6 +8,7 @@ const AuthPage = () => {
   const { addUserInfoInLocalStorage } = useContext(AuthContext);
   const emailInputRef = useRef<HTMLInputElement>(null);
   const passwordInputRef = useRef<HTMLInputElement>(null);
+  const nameInputRef = useRef<HTMLInputElement>(null);
 
   const [isLogin, setIsLogin] = useState(true);
   const router = useRouter();
@@ -35,7 +36,12 @@ const AuthPage = () => {
       }
     } else {
       try {
-        const signUpResponse = await createUser(enteredEmail, enteredPassword);
+        const enteredName = nameInputRef.current?.value || "";
+        const signUpResponse = await createUser(
+          enteredEmail,
+          enteredPassword,
+          enteredName
+        );
         if (signUpResponse.ok) {
           const data = await signUpResponse.json();
           addUserInfoInLocalStorage(data.data.id, data.data.token);
@@ -56,6 +62,12 @@ const AuthPage = () => {
     <section className={classes.auth}>
       <h1>{isLogin ? "Login" : "Sign Up"}</h1>
       <form onSubmit={(event) => submitHandler(event)}>
+        {!isLogin && (
+          <div className={classes.control}>
+            <label htmlFor="name">Your Name</label>
+            <input type="text" id="name" required ref={nameInputRef} />
+          </div>
+        )}
         <div className={classes.control}>
           <label htmlFor="email">Your Email</label>
           <input type="email" id="email" required ref={emailInputRef} />

@@ -1,3 +1,5 @@
+import { QuizModelWithId } from "@/models/quiz";
+
 interface IQuizCreatedSuccessful {
   quiz_id: string;
 }
@@ -12,4 +14,10 @@ export interface ICreateQuizResponse {
 export interface IQuestionResponse {
   error: HttpError | null;
   data: IQuizCreatedSuccessful | null;
+}
+
+export interface QuizByIdResponse {
+  data: {
+    quiz: QuizModelWithId;
+  };
 }

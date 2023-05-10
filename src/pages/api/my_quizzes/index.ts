@@ -36,6 +36,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<unknown>) {
   }
 
   Quiz.find({ creator_id: userId }, "_id title")
+    .sort({ _id: -1 })
     .then((quizzes) => {
       return res.status(200).json({
         data: {
