@@ -1,121 +1,50 @@
-import { AuthContext } from "@/pages/_app";
-import { useRouter } from "next/router";
-import { SetStateAction, useContext } from "react";
+import { useRef } from "react";
 import { Formik, FormikHelpers } from "formik";
-import { KeyedMutator } from "swr";
 import { QuestionModel } from "@/models/question";
 import OptionForm from "./OptionForm";
-import { QuizResponse } from "../index";
 import Link from "next/link";
 
 interface QuestionFormProps {
-  currentQuestionId: string | null;
-  setCurrentQuestionId: (value: SetStateAction<string | null>) => void;
+  handleSubmit: (
+    values: QuestionModel,
+    actions: FormikHelpers<QuestionModel>
+  ) => void;
   initialValues: QuestionModel;
-  getQuizById: KeyedMutator<QuizResponse>;
+  isResponse?: boolean;
 }
-
-// const validate = (values) => {
-//   const errors = {};
-
-//   if (!values.firstName) {
-//     errors.firstName = "Required";
-//   } else if (values.firstName.length > 15) {
-//     errors.firstName = "Must be 15 characters or less";
-//   }
-
-//   if (!values.lastName) {
-//     errors.lastName = "Required";
-//   } else if (values.lastName.length > 20) {
-//     errors.lastName = "Must be 20 characters or less";
-//   }
-
-//   if (!values.email) {
-//     errors.email = "Required";
-//   } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) {
-//     errors.email = "Invalid email address";
-//   }
-
-//   return errors;
-// };
 
 const QuestionForm = ({
   initialValues,
-  currentQuestionId,
-  setCurrentQuestionId,
-  getQuizById,
+  handleSubmit,
+  isResponse = false,
 }: QuestionFormProps) => {
-  const router = useRouter();
-  const { token } = useContext(AuthContext);
-
-  const handleSubmit = async (
+  const handleResponseSubmit = (
     values: QuestionModel,
     actions: FormikHelpers<QuestionModel>
   ) => {
-    // create new questions
-    if (!currentQuestionId) {
-      try {
-        const result = await fetch(`/api/edit_quiz/${router.query.quizId}`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            authorization: token as string,
-          },
-          body: JSON.stringify(values),
-        });
-        if (result.ok) {
-          const data = await result.json();
-          getQuizById();
-          setCurrentQuestionId(null);
-          actions.resetForm({
-            values: {
-              title: "",
-              type: "open",
-              options: [],
-            },
-          });
-        } else {
-          const errorData = await result.json();
-          throw new Error(errorData.error.message);
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    }
+    const isOpenQuestionResponse =
+      values.options.length === 1 && values.type === "open";
 
-    // edit currenct question
-    if (currentQuestionId) {
-      try {
-        const result = await fetch(
-          `/api/edit_quiz/${router.query.quizId}/question/${currentQuestionId}`,
-          {
-            method: "PATCH",
-            headers: {
-              "Content-Type": "application/json",
-              authorization: token as string,
+    const questionValues = isOpenQuestionResponse
+      ? {
+          ...values,
+          options: [
+            {
+              value: values.options[0].value,
+              isRightAnswer: false,
             },
-            body: JSON.stringify(values),
-          }
-        );
-        if (result.ok) {
-          const data = await result.json();
-          getQuizById();
-          setCurrentQuestionId(null);
-        } else {
-          const errorData = await result.json();
-          throw new Error(errorData.error.message);
+          ],
         }
-      } catch (error) {
-        console.log(error);
-      }
-    }
+      : values;
+
+    handleSubmit(questionValues, actions);
   };
 
   return (
     <div className="grow-1 p-2">
       <Formik
         initialValues={initialValues}
-        onSubmit={handleSubmit}
+        onSubmit={handleResponseSubmit}
         enableReinitialize
       >
         {({
@@ -140,6 +69,7 @@ const QuestionForm = ({
               onChange={handleChange}
               onBlur={handleBlur}
               value={values.title}
+              disabled={isResponse}
             />
             {touched.title && errors.title ? <div>{errors.title}</div> : null}
             <label htmlFor="type">Type</label>
@@ -149,14 +79,28 @@ const QuestionForm = ({
               onChange={handleChange}
               onBlur={handleBlur}
               value={values.type}
+              disabled={isResponse}
             >
               <option value="open">Free input</option>
               <option value="single_choice">Single option</option>
               <option value="multi_choice">Multiple options</option>
             </select>
             {touched.type && errors.type ? <div>{errors.type}</div> : null}
+            {values.type === "open" && isResponse && (
+              <input
+                type="text"
+                name="options[0].value"
+                value={values.options[0]?.value}
+                onChange={handleChange}
+                onBlur={handleBlur}
+              ></input>
+            )}
             {values.type !== "open" && (
-              <OptionForm values={values} setValues={setValues} />
+              <OptionForm
+                values={values}
+                setValues={setValues}
+                isResponse={isResponse}
+              />
             )}
 
             <button
@@ -168,9 +112,11 @@ const QuestionForm = ({
           </form>
         )}
       </Formik>
-      <Link href="/my_quizzes">
-        <button className="p-1 btn"> Save as Draft </button>
-      </Link>
+      {!isResponse ? (
+        <Link href="/my_quizzes">
+          <button className="p-1 btn"> Save as Draft </button>
+        </Link>
+      ) : null}
     </div>
   );
 };

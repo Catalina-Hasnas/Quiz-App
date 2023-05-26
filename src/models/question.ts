@@ -1,6 +1,6 @@
 import { Schema, model, models } from "mongoose";
 
-interface Option {
+export interface Option {
   _id?: string;
   value: string;
   isRightAnswer: boolean;

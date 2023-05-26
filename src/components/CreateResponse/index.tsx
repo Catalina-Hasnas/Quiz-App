@@ -1,29 +1,29 @@
 import Quiz, { QuizModelWithId } from "@/models/quiz";
 import { connectToDatabase } from "@/services/database.service";
-import { GetStaticPropsResult } from "next";
 import { useRouter } from "next/router";
 import { QuestionModel } from "@/models/question";
+import { FormikHelpers } from "formik";
 import QuestionForm from "@/components/CreateQuiz/Forms/QuestionForm";
 import { useContext, useState } from "react";
 import Sidebar from "@/components/CreateQuiz/Sidebar/Sidebar";
 import { AuthContext } from "@/pages/_app";
 
-interface QuizPageProps {
+interface CreateResponseProps {
   data: QuizModelWithId;
 }
 
-const QuizPage = ({ data }: QuizPageProps) => {
+const CreateResponse = ({ data }: CreateResponseProps) => {
   const router = useRouter();
 
   const { token } = useContext(AuthContext);
 
   const [currentQuestionId, setCurrentQuestionId] = useState<string | null>(
-    data?.questions?.[0]._id || null
+    data.questions[0]._id
   );
 
   const [responseId, setResponseId] = useState<string | null>(null);
 
-  const currentQuestion = data?.questions?.find(
+  const currentQuestion = data.questions.find(
     (question) => question._id === currentQuestionId
   );
 
@@ -34,7 +34,8 @@ const QuizPage = ({ data }: QuizPageProps) => {
   };
 
   const handleSubmit = async (values: QuestionModel) => {
-    if (!responseId && token) {
+    // create a response
+    if (!responseId) {
       try {
         const result = await fetch(
           `/api/response_quiz/${router.query.quizId}`,
@@ -60,7 +61,7 @@ const QuizPage = ({ data }: QuizPageProps) => {
     }
 
     // edit response
-    if (responseId && token) {
+    if (responseId) {
       try {
         const result = await fetch(
           `/api/response_quiz/${router.query.quizId}/response/${responseId}`,
@@ -98,7 +99,7 @@ const QuizPage = ({ data }: QuizPageProps) => {
       />
       <div className="sidebar surface-4 rad-shadow p-2 font-size-m">
         <Sidebar
-          questions={data?.questions || []}
+          questions={data.questions}
           setCurrentQuestionId={setCurrentQuestionId}
           currentQuestionId={currentQuestionId}
         />
@@ -122,36 +123,4 @@ export async function getStaticPaths() {
   };
 }
 
-export async function getStaticProps(
-  context: any
-): Promise<GetStaticPropsResult<QuizPageProps>> {
-  await connectToDatabase();
-
-  const quizId = context.params.quizId;
-
-  const quizData = await Quiz.findById(quizId);
-
-  if (!quizData) {
-    return {
-      notFound: true, // Return a 404 page
-    };
-  }
-
-  const data = JSON.stringify(quizData);
-
-  const quizWithoutAnswers = { ...JSON.parse(data) };
-
-  quizWithoutAnswers.questions.forEach((question: QuestionModel) => {
-    question.options.forEach((option) => {
-      option.isRightAnswer = false;
-    });
-  });
-
-  return {
-    props: {
-      data: quizWithoutAnswers,
-    },
-  };
-}
-
-export default QuizPage;
+export default CreateResponse;

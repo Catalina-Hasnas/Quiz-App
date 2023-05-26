@@ -7,12 +7,22 @@ interface SidebarProps {
   currentQuestionId: string | null;
 }
 
-const Sidebar = ({ questions, setCurrentQuestionId, currentQuestionId }: SidebarProps) => {
+const Sidebar = ({
+  questions,
+  setCurrentQuestionId,
+  currentQuestionId,
+}: SidebarProps) => {
   return (
     <ul className="flex direction-column gap-3 m-y-2 no-bullet display-block">
       {questions?.map((question, index) => {
         return (
-          <li className={`${currentQuestionId == question._id ? 'selected' : ''} sidebar-item p-1`} key={index} onClick={() => setCurrentQuestionId(question._id)}>
+          <li
+            className={`${
+              currentQuestionId == question._id ? "selected" : ""
+            } sidebar-item p-1`}
+            key={index}
+            onClick={() => setCurrentQuestionId(question._id)}
+          >
             {question.title}
           </li>
         );

@@ -4,9 +4,10 @@ import { Fragment, SetStateAction, useRef } from "react";
 interface OptionFormProps {
   values: QuestionModel;
   setValues: (values: SetStateAction<QuestionModel>) => void;
+  isResponse: boolean;
 }
 
-const OptionForm = ({ values, setValues }: OptionFormProps) => {
+const OptionForm = ({ values, setValues, isResponse }: OptionFormProps) => {
   const optionInputRef = useRef<HTMLInputElement>(null);
 
   const handleCreateOption = () => {
@@ -56,22 +57,24 @@ const OptionForm = ({ values, setValues }: OptionFormProps) => {
           </Fragment>
         ))}
       </div>
-      <div className="flex">
-        <input
-          className="align-self-center grow-1"
-          id="option"
-          name="option"
-          type="text"
-          ref={optionInputRef}
-        />
-        <button
-          className="p-x-2 btn info"
-          type="button"
-          onClick={() => handleCreateOption()}
-        >
-          Create Option
-        </button>
-      </div>
+      {!isResponse ? (
+        <div className="flex">
+          <input
+            className="align-self-center grow-1"
+            id="option"
+            name="option"
+            type="text"
+            ref={optionInputRef}
+          />
+          <button
+            className="p-x-2 btn info"
+            type="button"
+            onClick={() => handleCreateOption()}
+          >
+            Create Option
+          </button>
+        </div>
+      ) : null}
     </div>
   );
 };

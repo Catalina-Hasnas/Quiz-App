@@ -5,6 +5,7 @@ import { useContext, useState } from "react";
 import useSWR from "swr";
 import QuestionForm from "./Forms/QuestionForm";
 import Sidebar from "./Sidebar/Sidebar";
+import { FormikHelpers } from "formik";
 
 export type QuizResponse = {
   data: {
@@ -64,14 +65,72 @@ const CreateQuiz = () => {
     setCurrentQuestionId(null);
   };
 
+  const handleSubmit = async (
+    values: QuestionModel,
+    actions: FormikHelpers<QuestionModel>
+  ) => {
+    // create new questions
+    if (!currentQuestionId) {
+      try {
+        const result = await fetch(`/api/edit_quiz/${router.query.quizId}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            authorization: token as string,
+          },
+          body: JSON.stringify(values),
+        });
+        if (result.ok) {
+          const data = await result.json();
+          getQuizById();
+          setCurrentQuestionId(null);
+          actions.resetForm({
+            values: {
+              title: "",
+              type: "open",
+              options: [],
+            },
+          });
+        } else {
+          const errorData = await result.json();
+          throw new Error(errorData.error.message);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    // edit currenct question
+    if (currentQuestionId) {
+      try {
+        const result = await fetch(
+          `/api/edit_quiz/${router.query.quizId}/question/${currentQuestionId}`,
+          {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+              authorization: token as string,
+            },
+            body: JSON.stringify(values),
+          }
+        );
+        if (result.ok) {
+          const data = await result.json();
+          getQuizById();
+          setCurrentQuestionId(null);
+        } else {
+          const errorData = await result.json();
+          throw new Error(errorData.error.message);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
+
   return (
     <div className="flex direction-row grow height-100">
-      <QuestionForm
-        currentQuestionId={currentQuestionId}
-        setCurrentQuestionId={setCurrentQuestionId}
-        initialValues={initialValues}
-        getQuizById={getQuizById}
-      />
+      <QuestionForm initialValues={initialValues} handleSubmit={handleSubmit} />
       <div className="sidebar surface-4 rad-shadow p-2 font-size-m">
         {data?.data.questions && (
           <Sidebar
