@@ -17,11 +17,27 @@ export interface QuizzesPageProps {
 }
 
 const QuizzesPage = ({ data, currentPage, totalPages }: QuizzesPageProps) => {
-  const pages = Array.from({ length: totalPages }, (_, index) => (
-    <Link href={`/quizzes/page/${index}`} key={index}>
-      <span className={currentPage === index ? "accent" : "p-1"}>{index}</span>
-    </Link>
-  ));
+  const startPage = currentPage - 2 <= 0 ? 1 : currentPage - 2;
+  
+  const pages = Array.from({ length: 5 }, (_, index) => {
+    if(startPage + index > totalPages) {
+      return;
+    }
+    return (
+      <Link
+        href={`/quizzes/page/${startPage + index}`}
+        key={startPage + index}
+      >
+        <span
+          className={
+            currentPage === startPage + index ? "accent-box p-1" : "p-1"
+          }
+        >
+          {startPage + index}
+        </span>
+      </Link>
+    );
+  });
 
   const router = useRouter();
 
@@ -30,13 +46,17 @@ const QuizzesPage = ({ data, currentPage, totalPages }: QuizzesPageProps) => {
   }
 
   return (
-    <div>
-      <p>Quizzes page</p>
-      {data.map((quiz, index) => {
-        return <QuizCard key={index} {...quiz} />;
-      })}
-      <div>{pages}</div>
-    </div>
+    <>
+      <h1 className="m-y-2">Quizzes page</h1>
+      <div className="grid gap-3 quiz-list">
+        {data.map((quiz, index) => {
+          return <QuizCard key={index} {...quiz} />;
+        })}
+        <div className="flex gap-0 justify-center align-items-center font-size-l font-weight-600 rad-shadow surface-3 p-2">
+          {pages}
+        </div>
+      </div>
+    </>
   );
 };
 
@@ -53,7 +73,7 @@ export async function getStaticPaths() {
   const totalPages = await getTotalPages();
 
   const paths = Array.from({ length: totalPages }, (_, index) => ({
-    params: { page: index.toString() },
+    params: { page: index.toString() + 1 },
   }));
 
   return { paths, fallback: true };
@@ -68,7 +88,7 @@ export const getStaticProps: GetStaticProps<QuizzesPageProps> = async ({
   const totalItems = await Quiz.countDocuments();
   const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
 
-  const startIndex = currentPage * ITEMS_PER_PAGE;
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
 
   const docs = await Quiz.aggregate([
     {
@@ -109,7 +129,7 @@ export const getStaticProps: GetStaticProps<QuizzesPageProps> = async ({
       currentPage,
       totalPages,
     },
-    revalidate: currentPage === 0 ? 1 : undefined,
+    revalidate: currentPage === 1 ? 1 : undefined,
   };
 };
 

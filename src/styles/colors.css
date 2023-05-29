@@ -63,6 +63,11 @@
   background-color: var(--accent);
 }
 
+.rad-shadow-s {
+  box-shadow: 0 2.8px 2.2px
+      hsl(var(--surface-shadow) / calc(var(--shadow-strength) + 0.03));
+}
+
 .rad-shadow {
   box-shadow: 0 2.8px 2.2px
       hsl(var(--surface-shadow) / calc(var(--shadow-strength) + 0.03)),
