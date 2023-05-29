@@ -119,3 +119,34 @@ ul.display-block > * {
 .width-100 {
   width: 100%;
 }
+
+/*******************************/
+/*      BUTTONS & LINKS        */
+/*******************************/
+
+.btn {
+  cursor: pointer;
+  border: none;
+  border-radius: var(--border-radius);
+}
+
+.btn.submit {
+  background-color: hsl(var(--success-hsl) / 0.8);
+}
+
+.btn.info {
+  background-color: hsl(var(--info-hsl) / 0.8);
+}
+
+.btn-link {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-link:hover,
+a:hover,
+.btn-link:focus,
+a:focus {
+  text-decoration: underline;
+}
