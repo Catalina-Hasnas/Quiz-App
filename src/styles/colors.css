@@ -2,6 +2,57 @@
 /*         COLORS              */
 /*******************************/
 
+:root {
+  --brand-hue: 240;
+  --brand-saturation: 50%;
+  --brand-lightness: 25%;
+
+  --accent-hue: 330;
+  --accent-saturation: 100%;
+  --accent-lightness: 45%;
+
+  --brand: hsl(var(--brand-hue) var(--brand-saturation) var(--brand-lightness));
+
+  --accent-hsl: var(--accent-hue) var(--accent-saturation)
+    var(--accent-lightness);
+  --accent: hsl(var(--accent-hsl));
+
+  --surface1-hsl: var(--brand-hue) 25% 10%;
+  --surface2-hsl: var(--brand-hue) 25% 15%;
+  --surface3-hsl: var(--brand-hue) 20% 20%;
+  --surface4-hsl: var(--brand-hue) 25% 25%;
+
+  --surface1: hsl(var(--surface1-hsl));
+  --surface2: hsl(var(--surface2-hsl));
+  --surface3: hsl(var(--surface3-hsl));
+  --surface4: hsl(var(--surface4-hsl));
+
+  --text1: hsl(var(--brand-hue) 15% 85%);
+  --text2: hsl(var(--brand-hue) 5% 65%);
+
+  --lightness: var(--brand-lightness);
+  --saturation: var(--brand-saturation);
+
+  --info-hue: 203;
+  --info-hsl: var(--info-hue) var(--saturation) var(--lightness);
+  --info: hsl(var(--info-hsl));
+
+  --success-hue: 120;
+  --success-hsl: var(--success-hue) var(--saturation) var(--lightness);
+  --success: hsl(var(--success-hsl));
+
+  --warning-hue: 40;
+  --warning-hsl: var(--warning-hue) var(--saturation) var(--lightness);
+  --warning: hsl(var(--warning-hsl));
+
+  --failure-hue: 2;
+  --failure-hsl: var(--failure-hue) var(--saturation) var(--lightness);
+  --failure: hsl(var(--failure-hsl));
+
+  --surface-shadow: var(--brand-hue) 50% 3%;
+  --shadow-strength: 0.2;
+}
+
 .brand {
   color: var(--brand);
   background-color: var(--brand);
@@ -13,11 +64,12 @@
 }
 
 .rad-shadow {
-  box-shadow: 
-      0 2.8px 2.2px hsl(var(--surface-shadow) / calc(var(--shadow-strength) + .03)),
-      0 6.7px 5.3px hsl(var(--surface-shadow) / calc(var(--shadow-strength) + .01)),
-      0 12.5px 10px hsl(var(--surface-shadow) / calc(var(--shadow-strength) + .02))
-  ;
+  box-shadow: 0 2.8px 2.2px
+      hsl(var(--surface-shadow) / calc(var(--shadow-strength) + 0.03)),
+    0 6.7px 5.3px
+      hsl(var(--surface-shadow) / calc(var(--shadow-strength) + 0.01)),
+    0 12.5px 10px
+      hsl(var(--surface-shadow) / calc(var(--shadow-strength) + 0.02));
 }
 
 .text-1 {
