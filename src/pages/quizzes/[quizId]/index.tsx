@@ -3,13 +3,19 @@ import { connectToDatabase } from "@/services/database.service";
 import { GetStaticPropsResult } from "next";
 import { useRouter } from "next/router";
 import { QuestionModel } from "@/models/question";
-import QuestionForm from "@/components/CreateQuiz/Forms/QuestionForm";
 import { useContext, useState } from "react";
 import Sidebar from "@/components/CreateQuiz/Sidebar/Sidebar";
+import { Field, FieldProps, Form, Formik } from "formik";
 import { AuthContext } from "@/pages/_app";
+import QuestionForm from "@/components/Forms/QuestionForm";
+import CreateResponseOptionForm from "@/components/Forms/CreateResponseOptionForm";
 
 interface QuizPageProps {
   data: QuizModelWithId;
+}
+
+export interface ResponseInitialValues {
+  answers: QuizModelWithId["questions"];
 }
 
 const QuizPage = ({ data }: QuizPageProps) => {
@@ -21,67 +27,33 @@ const QuizPage = ({ data }: QuizPageProps) => {
     data?.questions?.[0]._id || null
   );
 
-  const [responseId, setResponseId] = useState<string | null>(null);
-
-  const currentQuestion = data?.questions?.find(
+  const currentQuestionIndex = data?.questions?.findIndex(
     (question) => question._id === currentQuestionId
   );
 
-  const initialValues: QuestionModel = {
-    title: currentQuestion ? currentQuestion.title : "",
-    type: currentQuestion ? currentQuestion.type : "open",
-    options: currentQuestion ? currentQuestion.options : [],
+  const initialValues: ResponseInitialValues = {
+    answers: data?.questions || [],
   };
 
-  const handleSubmit = async (values: QuestionModel) => {
-    if (!responseId && token) {
-      try {
-        const result = await fetch(
-          `/api/response_quiz/${router.query.quizId}`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              authorization: token as string,
-            },
-            body: JSON.stringify({ ...values, _id: currentQuestionId }),
-          }
-        );
-        if (result.ok) {
-          const data = await result.json();
-          setResponseId(data.data.response_id);
-        } else {
-          const errorData = await result.json();
-          throw new Error(errorData.error.message);
-        }
-      } catch (error) {
-        console.log(error);
+  const handleSubmit = async (values: ResponseInitialValues) => {
+    try {
+      const result = await fetch(`/api/response_quiz/${router.query.quizId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: token as string,
+        },
+        body: JSON.stringify(values),
+      });
+      if (result.ok) {
+        const data = await result.json();
+        console.log(data);
+      } else {
+        const errorData = await result.json();
+        throw new Error(errorData.error.message);
       }
-    }
-
-    // edit response
-    if (responseId && token) {
-      try {
-        const result = await fetch(
-          `/api/response_quiz/${router.query.quizId}/response/${responseId}`,
-          {
-            method: "PATCH",
-            headers: {
-              "Content-Type": "application/json",
-              authorization: token as string,
-            },
-            body: JSON.stringify({ ...values, _id: currentQuestionId }),
-          }
-        );
-        if (result.ok) {
-          const data = await result.json();
-        } else {
-          const errorData = await result.json();
-          throw new Error(errorData.error.message);
-        }
-      } catch (error) {
-        console.log(error);
-      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -90,20 +62,56 @@ const QuizPage = ({ data }: QuizPageProps) => {
   }
 
   return (
-    <div className="flex direction-row grow height-100">
-      <QuestionForm
-        initialValues={initialValues}
-        handleSubmit={handleSubmit}
-        isResponse
-      />
-      <div className="sidebar surface-4 rad-shadow p-2 font-size-m">
-        <Sidebar
-          questions={data?.questions || []}
-          setCurrentQuestionId={setCurrentQuestionId}
-          currentQuestionId={currentQuestionId}
-        />
-      </div>
-    </div>
+    <Formik initialValues={{ ...initialValues }} onSubmit={handleSubmit}>
+      {({ values, setFieldValue }) => (
+        <div className="flex direction-row grow height-100">
+          <Form>
+            <QuestionForm
+              titleFieldName={`answers[${currentQuestionIndex}].title`}
+              typeFieldName={`answers[${currentQuestionIndex}].type`}
+              disableFields
+            >
+              {values.answers[currentQuestionIndex].type !== "open" ? (
+                <CreateResponseOptionForm
+                  questionIndex={currentQuestionIndex}
+                />
+              ) : (
+                <Field
+                  type="text"
+                  name={`answers[${currentQuestionIndex}].options[0].value`}
+                >
+                  {({ field }: FieldProps<string>) => (
+                    <input
+                      {...field}
+                      onChange={(value) => {
+                        field.onChange(value);
+                        setFieldValue(
+                          `answers[${currentQuestionIndex}].options[0].isRightAnswer`,
+                          false
+                        );
+                      }}
+                    />
+                  )}
+                </Field>
+              )}
+            </QuestionForm>
+            <button
+              className="align-self-center line-height-2 p-x-2 m-y-2 btn submit"
+              type="submit"
+            >
+              Submit
+            </button>
+          </Form>
+          <div className="sidebar surface-4 rad-shadow p-2 font-size-m">
+            <Sidebar
+              questions={data?.questions || []}
+              setCurrentQuestionId={setCurrentQuestionId}
+              currentQuestionId={currentQuestionId}
+            />
+          </div>
+        </div>
+      )}
+    </Formik>
   );
 };
 

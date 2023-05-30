@@ -3,9 +3,10 @@ import { AuthContext } from "@/pages/_app";
 import { useRouter } from "next/router";
 import { useContext, useState } from "react";
 import useSWR from "swr";
-import QuestionForm from "./Forms/QuestionForm";
+import QuestionForm from "../Forms/QuestionForm";
 import Sidebar from "./Sidebar/Sidebar";
-import { FormikHelpers } from "formik";
+import { Form, Formik, FormikHelpers } from "formik";
+import CreateQuizOptionForm from "../Forms/CreateQuizOptionForm";
 
 export type QuizResponse = {
   data: {
@@ -130,7 +131,27 @@ const CreateQuiz = () => {
 
   return (
     <div className="flex direction-row grow height-100">
-      <QuestionForm initialValues={initialValues} handleSubmit={handleSubmit} />
+      <Formik
+        initialValues={initialValues}
+        onSubmit={handleSubmit}
+        enableReinitialize
+      >
+        {({ values }) => (
+          <Form>
+            <QuestionForm titleFieldName="title" typeFieldName="type">
+              <>
+                {values.type !== "open" ? <CreateQuizOptionForm /> : null}
+                <button
+                  className="align-self-center line-height-2 p-x-2 m-y-2 btn submit"
+                  type="submit"
+                >
+                  Submit
+                </button>
+              </>
+            </QuestionForm>
+          </Form>
+        )}
+      </Formik>
       <div className="sidebar surface-4 rad-shadow p-2 font-size-m">
         {data?.data.questions && (
           <Sidebar

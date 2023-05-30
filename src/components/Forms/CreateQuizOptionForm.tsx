@@ -1,14 +1,11 @@
 import { QuestionModel } from "@/models/question";
-import { Fragment, SetStateAction, useRef } from "react";
+import { useFormikContext } from "formik";
+import { Fragment, useRef } from "react";
 
-interface OptionFormProps {
-  values: QuestionModel;
-  setValues: (values: SetStateAction<QuestionModel>) => void;
-  isResponse: boolean;
-}
-
-const OptionForm = ({ values, setValues, isResponse }: OptionFormProps) => {
+const CreateQuizOptionForm = () => {
   const optionInputRef = useRef<HTMLInputElement>(null);
+
+  const { values, setValues } = useFormikContext<QuestionModel>();
 
   const handleCreateOption = () => {
     const newOption = {
@@ -57,26 +54,24 @@ const OptionForm = ({ values, setValues, isResponse }: OptionFormProps) => {
           </Fragment>
         ))}
       </div>
-      {!isResponse ? (
-        <div className="flex">
-          <input
-            className="align-self-center grow-1"
-            id="option"
-            name="option"
-            type="text"
-            ref={optionInputRef}
-          />
-          <button
-            className="p-x-2 btn info"
-            type="button"
-            onClick={() => handleCreateOption()}
-          >
-            Create Option
-          </button>
-        </div>
-      ) : null}
+      <div className="flex">
+        <input
+          className="align-self-center grow-1"
+          id="option"
+          name="option"
+          type="text"
+          ref={optionInputRef}
+        />
+        <button
+          className="p-x-2 btn info"
+          type="button"
+          onClick={() => handleCreateOption()}
+        >
+          Create Option
+        </button>
+      </div>
     </div>
   );
 };
 
-export default OptionForm;
+export default CreateQuizOptionForm;
