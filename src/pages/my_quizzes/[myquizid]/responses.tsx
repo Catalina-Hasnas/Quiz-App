@@ -3,3 +3,7 @@ const ResponsesToMyQuiz = () => {
 };
 
 export default ResponsesToMyQuiz;
+
+export async function getServerSideProps() {
+  return { props: {} };
+}

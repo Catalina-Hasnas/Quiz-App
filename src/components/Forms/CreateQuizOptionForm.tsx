@@ -1,13 +1,11 @@
 import { QuestionModel } from "@/models/question";
-import { Fragment, SetStateAction, useRef } from "react";
+import { useFormikContext } from "formik";
+import { Fragment, useRef } from "react";
 
-interface OptionFormProps {
-  values: QuestionModel;
-  setValues: (values: SetStateAction<QuestionModel>) => void;
-}
-
-const OptionForm = ({ values, setValues }: OptionFormProps) => {
+const CreateQuizOptionForm = () => {
   const optionInputRef = useRef<HTMLInputElement>(null);
+
+  const { values, setValues } = useFormikContext<QuestionModel>();
 
   const handleCreateOption = () => {
     const newOption = {
@@ -76,4 +74,4 @@ const OptionForm = ({ values, setValues }: OptionFormProps) => {
   );
 };
 
-export default OptionForm;
+export default CreateQuizOptionForm;
