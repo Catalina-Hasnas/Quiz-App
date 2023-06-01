@@ -23,9 +23,6 @@ const MyQuizPage = () => {
     return result.json();
   };
 
-  console.log({ token });
-  console.log(router.query.myquizid);
-
   const {
     data,
     isLoading,
@@ -36,8 +33,6 @@ const MyQuizPage = () => {
       : null,
     token && router.query.myquizid ? getMyQuiz : null
   );
-
-  console.log(data);
 
   const handlePublishClick = async () => {
     try {
