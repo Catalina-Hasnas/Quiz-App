@@ -1,20 +1,23 @@
 import { FormEvent, useContext, useRef } from "react";
 import { AuthContext } from "../_app";
 import router from "next/router";
+import { Field, Form, Formik } from "formik";
 
 const CreateQuiz = () => {
   const { token } = useContext(AuthContext);
-  const titleInputRef = useRef<HTMLInputElement>(null);
-  const descriptionInputRef = useRef<HTMLTextAreaElement>(null);
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+
+  const initialValues = {
+    title: "",
+    description: "",
+  };
+  const handleSubmit = async (values: {
+    title: string;
+    description: string;
+  }) => {
     try {
       const result = await fetch("/api/quizzes/create", {
         method: "POST",
-        body: JSON.stringify({
-          title: titleInputRef?.current?.value,
-          description: descriptionInputRef?.current?.value,
-        }),
+        body: JSON.stringify(values),
         headers: {
           "Content-Type": "application/json",
           authorization: token as string,
@@ -33,37 +36,35 @@ const CreateQuiz = () => {
   };
 
   return (
-    <form
-      className="flex direction-column font-size-m m-y-2"
-      onSubmit={(event) => handleSubmit(event)}
-    >
-      <label className="font-size-l" htmlFor="title">
-        Title
-      </label>
-      <input
-        className="align-self-baseline"
-        name="title"
-        id="title"
-        type="text"
-        ref={titleInputRef}
-        required
-      />
-      <label className="font-size-l" htmlFor="title">
-        Description
-      </label>
-      <textarea
-        name="description"
-        id="description"
-        ref={descriptionInputRef}
-        required
-      />
-      <button
-        className="align-self-baseline line-height-2 p-x-2 m-y-2 btn submit"
-        type="submit"
-      >
-        Submit
-      </button>
-    </form>
+    <Formik initialValues={initialValues} onSubmit={handleSubmit}>
+      <Form className="flex direction-column font-size-m m-y-2">
+        <label className="font-size-l" htmlFor="title">
+          Title
+        </label>
+        <Field
+          name="title"
+          type="text"
+          required
+          className="align-self-baseline"
+        />
+        <label className="font-size-l" htmlFor="description">
+          Description
+        </label>
+        <Field
+          as="textarea"
+          name="description"
+          type="text"
+          required
+          className="align-self-baseline"
+        />
+        <button
+          className="align-self-baseline line-height-2 p-x-2 m-y-2 btn submit"
+          type="submit"
+        >
+          Submit
+        </button>
+      </Form>
+    </Formik>
   );
 };
 

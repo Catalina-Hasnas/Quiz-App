@@ -4,7 +4,7 @@ import { GetStaticPropsResult } from "next";
 import { useRouter } from "next/router";
 import { QuestionModel } from "@/models/question";
 import { useContext, useState } from "react";
-import Sidebar from "@/components/CreateQuiz/Sidebar/Sidebar";
+import Sidebar from "@/components/Sidebar/Sidebar";
 import { Field, FieldProps, Form, Formik } from "formik";
 import { AuthContext } from "@/pages/_app";
 import QuestionForm from "@/components/Forms/QuestionForm";
@@ -24,12 +24,13 @@ const QuizPage = ({ data }: QuizPageProps) => {
   const { token } = useContext(AuthContext);
 
   const [currentQuestionId, setCurrentQuestionId] = useState<string | null>(
-    data?.questions?.[0]._id || null
+    data?.questions?.[0]?._id || null
   );
 
-  const currentQuestionIndex = data?.questions?.findIndex(
-    (question) => question._id === currentQuestionId
-  );
+  const currentQuestionIndex =
+    data?.questions?.findIndex(
+      (question) => question?._id === currentQuestionId
+    ) ?? 0;
 
   const initialValues: ResponseInitialValues = {
     answers: data?.questions || [],
@@ -71,7 +72,7 @@ const QuizPage = ({ data }: QuizPageProps) => {
               typeFieldName={`answers[${currentQuestionIndex}].type`}
               disableFields
             >
-              {values.answers[currentQuestionIndex].type !== "open" ? (
+              {values.answers[currentQuestionIndex]?.type !== "open" ? (
                 <CreateResponseOptionForm
                   questionIndex={currentQuestionIndex}
                 />

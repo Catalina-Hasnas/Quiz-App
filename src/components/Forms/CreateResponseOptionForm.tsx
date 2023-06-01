@@ -12,7 +12,7 @@ const CreateResponseOptionForm = ({
   return (
     <div className="flex direction-column m-y-2">
       <div className="options grid gap-1">
-        {values.answers[questionIndex].options?.map((option, index) => (
+        {values.answers[questionIndex]?.options?.map((option, index) => (
           <Fragment key={index}>
             <Field
               name={`answers[${questionIndex}].options[${index}].isRightAnswer`}
@@ -20,8 +20,8 @@ const CreateResponseOptionForm = ({
               type="checkbox"
               disabled={
                 !!(
-                  values.answers[questionIndex].type === "single_choice" &&
-                  values.answers[questionIndex].options.find(
+                  values.answers[questionIndex]?.type === "single_choice" &&
+                  values.answers[questionIndex]?.options.find(
                     (option) => option.isRightAnswer
                   ) &&
                   !option.isRightAnswer
