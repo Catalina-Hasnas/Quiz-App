@@ -8,6 +8,10 @@ export interface ResponseModel {
   respondent_id: ObjectId | string;
 }
 
+export interface ResponseModelWIthId extends ResponseModel {
+  _id: string;
+}
+
 const quizSchema = new Schema<ResponseModel>({
   quiz_id: { type: ObjectId, required: true, ref: "Quiz" },
   answers: [questionSchema],

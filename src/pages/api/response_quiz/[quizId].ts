@@ -6,8 +6,6 @@ import { IUserToken } from "@/services/auth/types";
 import { connectToDatabase } from "@/services/database.service";
 import type { NextApiRequest, NextApiResponse } from "next";
 
-type InputObject = { [key: string]: any };
-
 async function handler(req: NextApiRequest, res: NextApiResponse<unknown>) {
   const quizId = req.query.quizId;
 

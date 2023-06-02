@@ -48,6 +48,7 @@ const QuizPage = ({ data }: QuizPageProps) => {
       });
       if (result.ok) {
         const data = await result.json();
+        router.replace(`/response/${data.data.response_id}`);
       } else {
         const errorData = await result.json();
         throw new Error(errorData.error.message);
