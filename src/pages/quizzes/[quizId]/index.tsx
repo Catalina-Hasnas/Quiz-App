@@ -80,20 +80,7 @@ const QuizPage = ({ data }: QuizPageProps) => {
                 <Field
                   type="text"
                   name={`answers[${currentQuestionIndex}].options[0].value`}
-                >
-                  {({ field }: FieldProps<string>) => (
-                    <input
-                      {...field}
-                      onChange={(value) => {
-                        field.onChange(value);
-                        setFieldValue(
-                          `answers[${currentQuestionIndex}].options[0].isRightAnswer`,
-                          false
-                        );
-                      }}
-                    />
-                  )}
-                </Field>
+                />
               )}
             </QuestionForm>
             <button

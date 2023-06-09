@@ -1,5 +1,6 @@
+import { Option, QuestionModelWithId } from "@/models/question";
 import Quiz, { QuizModelWithId } from "@/models/quiz";
-import Response, { ResponseModelWIthId } from "@/models/response";
+import Response from "@/models/response";
 import User from "@/models/user";
 import { verifyToken } from "@/services/auth/auth";
 import { IUserToken } from "@/services/auth/types";
@@ -54,7 +55,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<unknown>) {
   if (responseId) {
     if (req.method === "GET") {
       Response.findById(responseId)
-        .then(async (response: ResponseModelWIthId) => {
+        .then(async (response) => {
           if (!response) {
             return res.status(404).json({
               error: {
@@ -68,67 +69,85 @@ async function handler(req: NextApiRequest, res: NextApiResponse<unknown>) {
           try {
             const quiz: QuizModelWithId | null = await Quiz.findById(quizId);
 
-            const getTestResults = () => {
-              const pending = [];
-              const rightAnswers = [];
-              const wrongAnswers = [];
+            if (!response.reviewed) {
+              const getTestResults = () => {
+                const pending = [];
+                const rightAnswers = [];
+                const wrongAnswers = [];
 
-              if (quiz) {
-                for (let i = 0; i < quiz.questions.length; i++) {
-                  const quizQuestion = quiz.questions[i];
-                  const responseQuestion = response.answers[i];
+                if (quiz) {
+                  for (let i = 0; i < quiz.questions.length; i++) {
+                    const quizQuestion = quiz.questions[i];
+                    const responseQuestion = response.answers[i];
 
-                  if (quizQuestion.type === "open") {
-                    pending.push(quizQuestion._id);
-                  } else {
-                    let isAllOptionsRight = true;
-                    const correctOptionsId = [];
-
-                    for (let j = 0; j < quizQuestion.options.length; j++) {
-                      const quizOption = quizQuestion.options[j];
-                      const responseOption = responseQuestion.options.find(
-                        (option) =>
-                          option._id?.toString() === quizOption._id?.toString()
-                      );
-
-                      if (quizOption?._id && quizOption.isRightAnswer) {
-                        correctOptionsId.push(quizOption._id.toString());
-                      }
-
-                      if (
-                        responseOption &&
-                        responseOption.isRightAnswer !==
-                          quizOption.isRightAnswer
-                      ) {
-                        isAllOptionsRight = false;
-                      }
-                    }
-
-                    if (isAllOptionsRight) {
-                      rightAnswers.push(quizQuestion._id.toString());
+                    if (quizQuestion.type === "open") {
+                      pending.push(quizQuestion._id);
                     } else {
-                      wrongAnswers.push({
-                        question_id: quizQuestion._id.toString(),
-                        correctOptionsId,
-                      });
+                      let isAllOptionsRight = true;
+                      const correctOptionsId = [];
+
+                      for (let j = 0; j < quizQuestion.options.length; j++) {
+                        const quizOption = quizQuestion.options[j];
+                        const responseOption = responseQuestion.options.find(
+                          (option: Option) =>
+                            option._id?.toString() ===
+                            quizOption._id?.toString()
+                        );
+
+                        if (quizOption?._id && quizOption.isRightAnswer) {
+                          correctOptionsId.push(quizOption._id.toString());
+                        }
+
+                        if (
+                          responseOption &&
+                          responseOption.isRightAnswer !==
+                            quizOption.isRightAnswer
+                        ) {
+                          isAllOptionsRight = false;
+                        }
+                      }
+
+                      if (isAllOptionsRight) {
+                        rightAnswers.push(quizQuestion._id.toString());
+                      } else {
+                        wrongAnswers.push({
+                          question_id: quizQuestion._id.toString(),
+                          correctOptionsId,
+                        });
+                      }
                     }
                   }
                 }
-              }
 
-              return {
-                pending,
-                rightAnswers,
-                wrongAnswers,
+                return {
+                  pending,
+                  rightAnswers,
+                  wrongAnswers,
+                };
               };
-            };
 
-            const testResults = getTestResults();
+              const testResults = getTestResults();
+
+              const updatedResponse = await Response.findOneAndUpdate(
+                { _id: responseId },
+                { response_results: testResults },
+                { new: true }
+              );
+
+              await updatedResponse.save();
+
+              return res.status(200).json({
+                data: {
+                  response: updatedResponse,
+                  testResults: updatedResponse.response_results,
+                },
+              });
+            }
 
             return res.status(200).json({
               data: {
                 response: response,
-                testResults: testResults,
+                testResults: response.response_results,
               },
             });
           } catch (err) {
@@ -146,6 +165,54 @@ async function handler(req: NextApiRequest, res: NextApiResponse<unknown>) {
             },
           });
         });
+    }
+    if (req.method === "PATCH") {
+      const getRightOrWrongQuestions = ({ isRight }: { isRight: boolean }) => {
+        const openQuestions = req.body.answers.filter(
+          (answer: QuestionModelWithId) =>
+            answer.type === "open" &&
+            answer.options[0].isRightAnswer === isRight
+        );
+
+        if (isRight) {
+          return openQuestions.map((answer: QuestionModelWithId) => {
+            return answer._id;
+          });
+        }
+
+        return openQuestions.map((answer: QuestionModelWithId) => {
+          return { question_id: answer._id, correctOptionsId: [] };
+        });
+      };
+
+      const newResponse = await Response.findOneAndUpdate(
+        { _id: responseId },
+        {
+          $push: {
+            "response_results.rightAnswers": getRightOrWrongQuestions({
+              isRight: true,
+            }),
+            "response_results.wrongAnswers": getRightOrWrongQuestions({
+              isRight: false,
+            }),
+          },
+          $set: {
+            reviewed: true,
+            answers: req.body.answers,
+            "response_results.pending": [],
+          },
+        },
+        { new: true }
+      );
+
+      const updatedResponse = await newResponse.save();
+
+      return res.status(200).json({
+        data: {
+          response: updatedResponse,
+          testResults: updatedResponse.response_results,
+        },
+      });
     }
   }
 }

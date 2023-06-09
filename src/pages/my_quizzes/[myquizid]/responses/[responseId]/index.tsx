@@ -2,7 +2,7 @@ import { QuizModelWithId } from "@/models/quiz";
 import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
 import Sidebar from "@/components/Sidebar/Sidebar";
-import { Field, Form, Formik } from "formik";
+import { Field, FieldInputProps, Form, Formik } from "formik";
 import { AuthContext } from "@/pages/_app";
 import QuestionForm from "@/components/Forms/QuestionForm";
 import CreateResponseOptionForm from "@/components/Forms/CreateResponseOptionForm";
@@ -27,13 +27,13 @@ interface ResponseDataType {
   };
 }
 
-const ResponsePage = () => {
+const MyQuizzesResponsePage = () => {
   const router = useRouter();
 
   const { token } = useContext(AuthContext);
 
   const getResponseById = async () => {
-    const result = await fetch(`/api/response/${router.query.id}`, {
+    const result = await fetch(`/api/response/${router.query.responseId}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -47,22 +47,27 @@ const ResponsePage = () => {
     null
   );
 
+  const [rightAnswersNumber, setRightAnswersNumber] = useState<number>(0);
+
   const {
     data: responseData,
     error,
     isLoading,
   } = useSWR<ResponseDataType>(
-    router.query.id && token ? [`/api/response/${router.query.id}`] : null,
-    router.query.id && token ? getResponseById : null
+    router.query.responseId && token
+      ? [`/api/response/${router.query.responseId}`]
+      : null,
+    router.query.responseId && token ? getResponseById : null
   );
 
   const data = responseData?.data;
 
   useEffect(() => {
-    if (data) {
-      setCurrentQuestionId(data?.response?.answers[0]._id);
+    if (data?.response.answers && data?.testResults.rightAnswers) {
+      setCurrentQuestionId(data.response.answers[0]._id);
+      setRightAnswersNumber(data.testResults.rightAnswers.length);
     }
-  }, [data]);
+  }, [data?.response.answers, data?.testResults.rightAnswers]);
 
   if (isLoading) {
     return <p>is loading...</p>;
@@ -84,17 +89,17 @@ const ResponsePage = () => {
   const getQuestionResult = () => {
     if (currentQuestionId) {
       if (data?.testResults.pending.includes(currentQuestionId)) {
-        return "creator of this quiz hasn't reviewed that yet";
+        return "Please review this";
       }
       if (data?.testResults.rightAnswers.includes(currentQuestionId)) {
-        return "you got this right";
+        return "the respondent got this right";
       }
       if (
         data?.testResults.wrongAnswers.find(
           (item) => item.question_id === currentQuestionId
         )
       ) {
-        return "you got this wrong";
+        return "the respondent got this wrong";
       }
     }
     return null;
@@ -102,8 +107,31 @@ const ResponsePage = () => {
 
   const message = getQuestionResult();
 
+  const handleSubmit = async (values: ResponseInitialValues) => {
+    try {
+      const result = await fetch(`/api/response/${router.query.responseId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: token as string,
+        },
+        body: JSON.stringify(values),
+      });
+      if (result.ok) {
+        const data = await result.json();
+        console.log(data);
+        // router.replace(`/response/${data.data.response_id}`);
+      } else {
+        const errorData = await result.json();
+        throw new Error(errorData.error.message);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
-    <Formik initialValues={{ ...initialValues }} onSubmit={() => {}}>
+    <Formik initialValues={{ ...initialValues }} onSubmit={handleSubmit}>
       {({ values }) => (
         <div className="flex direction-row grow height-100">
           <Form>
@@ -124,16 +152,50 @@ const ResponsePage = () => {
                   }
                 />
               ) : (
-                <Field
-                  type="text"
-                  name={`answers[${currentQuestionIndex}].options[0].value`}
-                  disabled
-                />
+                <>
+                  <Field
+                    type="text"
+                    name={`answers[${currentQuestionIndex}].options[0].value`}
+                    disabled
+                  />
+                  <label
+                    htmlFor={`answers[${currentQuestionIndex}].options[0].isRightAnswer`}
+                  >
+                    is right answer
+                  </label>
+                  <Field
+                    type="checkbox"
+                    name={`answers[${currentQuestionIndex}].options[0].isRightAnswer`}
+                  >
+                    {({ field }: { field: FieldInputProps<string> }) => {
+                      return (
+                        <input
+                          {...field}
+                          type="checkbox"
+                          onChange={(e) => {
+                            field.onChange(e);
+                            setRightAnswersNumber(
+                              field.value
+                                ? rightAnswersNumber - 1
+                                : rightAnswersNumber + 1
+                            );
+                          }}
+                        />
+                      );
+                    }}
+                  </Field>
+                </>
               )}
             </QuestionForm>
-            <p>
-              {`${data?.testResults.rightAnswers.length}/${data?.response.answers.length}`}
-            </p>
+            <p>{`${rightAnswersNumber}/${data?.response.answers.length}`}</p>
+            {!data?.response.reviewed && (
+              <button
+                className="align-self-center line-height-2 p-x-2 m-y-2 btn submit"
+                type="submit"
+              >
+                Submit
+              </button>
+            )}
           </Form>
           <div className="sidebar surface-4 rad-shadow p-2 font-size-m">
             <Sidebar
@@ -148,7 +210,7 @@ const ResponsePage = () => {
   );
 };
 
-export default ResponsePage;
+export default MyQuizzesResponsePage;
 
 export async function getServerSideProps() {
   return { props: {} };
