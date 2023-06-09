@@ -59,9 +59,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<unknown>) {
       quiz_id: existingQuiz._id as string,
       answers: req.body.answers,
       respondent_id: userId,
-      reviewed: !req.body.answers.some(
-        (answer: QuestionModelWithId) => answer.type === "open"
-      ),
+      reviewed: false,
     });
 
     const savedResponse = await newResponse.save();

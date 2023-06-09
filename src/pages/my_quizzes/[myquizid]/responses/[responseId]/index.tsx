@@ -63,11 +63,12 @@ const MyQuizzesResponsePage = () => {
   const data = responseData?.data;
 
   useEffect(() => {
-    if (data?.response.answers && data?.testResults.rightAnswers) {
+    if (data?.response._id) {
       setCurrentQuestionId(data.response.answers[0]._id);
       setRightAnswersNumber(data.testResults.rightAnswers.length);
     }
-  }, [data?.response.answers, data?.testResults.rightAnswers]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data?.response._id]);
 
   if (isLoading) {
     return <p>is loading...</p>;

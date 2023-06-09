@@ -130,7 +130,12 @@ async function handler(req: NextApiRequest, res: NextApiResponse<unknown>) {
 
               const updatedResponse = await Response.findOneAndUpdate(
                 { _id: responseId },
-                { response_results: testResults },
+                {
+                  response_results: testResults,
+                  reviewed: !response.answers.some(
+                    (answer: QuestionModelWithId) => answer.type === "open"
+                  ),
+                },
                 { new: true }
               );
 
