@@ -21,7 +21,7 @@ const MainNavigation = () => {
             <Link href="/">Home</Link>
           </li>
           <li>
-            <Link href="/quizzes/page/0">Quizzes</Link>
+            <Link href="/quizzes/page/1">Quizzes</Link>
           </li>
           {!token && (
             <li>
