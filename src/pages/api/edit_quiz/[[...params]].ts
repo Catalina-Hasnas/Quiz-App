@@ -73,7 +73,14 @@ async function handler(req: NextApiRequest, res: NextApiResponse<unknown>) {
   }
 
   if (req.method === "POST") {
-    const newQuestion = new Question(req.body);
+    const { title, type, options } = req.body;
+
+    const newQuestion = new Question({
+      title,
+      type,
+      options:
+        type === "open" ? [{ value: "", isRightAnswer: false }] : options,
+    });
 
     await existingQuiz.questions.push(newQuestion);
 

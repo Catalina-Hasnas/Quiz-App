@@ -7,7 +7,7 @@ export interface Option {
 }
 
 const optionSchema = new Schema<Option>({
-  value: { type: String, required: true },
+  value: { type: String },
   isRightAnswer: { type: Boolean, required: true },
 });
 

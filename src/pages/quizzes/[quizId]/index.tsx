@@ -48,6 +48,7 @@ const QuizPage = ({ data }: QuizPageProps) => {
       });
       if (result.ok) {
         const data = await result.json();
+        router.replace(`/response/${data.data.response_id}`);
       } else {
         const errorData = await result.json();
         throw new Error(errorData.error.message);
@@ -79,20 +80,7 @@ const QuizPage = ({ data }: QuizPageProps) => {
                 <Field
                   type="text"
                   name={`answers[${currentQuestionIndex}].options[0].value`}
-                >
-                  {({ field }: FieldProps<string>) => (
-                    <input
-                      {...field}
-                      onChange={(value) => {
-                        field.onChange(value);
-                        setFieldValue(
-                          `answers[${currentQuestionIndex}].options[0].isRightAnswer`,
-                          false
-                        );
-                      }}
-                    />
-                  )}
-                </Field>
+                />
               )}
             </QuestionForm>
             <button

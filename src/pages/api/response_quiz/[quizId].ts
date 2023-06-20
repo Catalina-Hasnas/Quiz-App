@@ -1,12 +1,12 @@
+import { QuestionModelWithId } from "@/models/question";
 import Quiz from "@/models/quiz";
 import Response from "@/models/response";
 import User from "@/models/user";
 import { verifyToken } from "@/services/auth/auth";
 import { IUserToken } from "@/services/auth/types";
 import { connectToDatabase } from "@/services/database.service";
+import mongoose from "mongoose";
 import type { NextApiRequest, NextApiResponse } from "next";
-
-type InputObject = { [key: string]: any };
 
 async function handler(req: NextApiRequest, res: NextApiResponse<unknown>) {
   const quizId = req.query.quizId;
@@ -59,6 +59,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<unknown>) {
       quiz_id: existingQuiz._id as string,
       answers: req.body.answers,
       respondent_id: userId,
+      reviewed: false,
     });
 
     const savedResponse = await newResponse.save();
@@ -66,6 +67,48 @@ async function handler(req: NextApiRequest, res: NextApiResponse<unknown>) {
     return res.status(201).json({
       data: {
         response_id: savedResponse?.id,
+      },
+    });
+  }
+
+  if (req.method === "GET") {
+    const quizObjectId = new mongoose.Types.ObjectId(quizId as string);
+    const responses = await Response.aggregate([
+      {
+        $match: { quiz_id: quizObjectId },
+      },
+      {
+        $sort: { _id: -1 },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "respondent_id",
+          foreignField: "_id",
+          as: "respondent",
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          reviewed: 1,
+          quiz_id: 1,
+          respondent: { $arrayElemAt: ["$respondent.name", 0] },
+        },
+      },
+    ]);
+
+    if (responses) {
+      return res.status(200).json({
+        data: {
+          responses: responses,
+        },
+      });
+    }
+
+    return res.status(200).json({
+      data: {
+        responses: [],
       },
     });
   }

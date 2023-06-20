@@ -1,8 +1,10 @@
 import Quiz from "@/models/quiz";
+import Response from "@/models/response";
 import User from "@/models/user";
 import { verifyToken } from "@/services/auth/auth";
 import { IUserToken } from "@/services/auth/types";
 import { connectToDatabase } from "@/services/database.service";
+import mongoose from "mongoose";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 async function handler(req: NextApiRequest, res: NextApiResponse<unknown>) {
@@ -35,22 +37,51 @@ async function handler(req: NextApiRequest, res: NextApiResponse<unknown>) {
     return;
   }
 
-  Quiz.find({ creator_id: userId }, "_id title")
-    .sort({ _id: -1 })
-    .then((quizzes) => {
-      return res.status(200).json({
-        data: {
-          quizzes: quizzes,
-        },
-      });
-    })
-    .catch((err) => {
-      return res.status(500).json({
-        error: {
-          message: `Couldn't find Quizzes of user with id ${userId}: ${err}`,
-        },
-      });
+  const quizzes = await Quiz.find({ creator_id: userId }, "_id title").sort({
+    _id: -1,
+  });
+
+  const userObjectId = new mongoose.Types.ObjectId(userId as string);
+
+  const responses = await Response.aggregate([
+    {
+      $match: { respondent_id: userObjectId },
+    },
+    {
+      $sort: { _id: -1 },
+    },
+    {
+      $lookup: {
+        from: "quizzes",
+        localField: "quiz_id",
+        foreignField: "_id",
+        as: "quiz",
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+        reviewed: 1,
+        quiz_id: 1,
+        quiz_title: { $arrayElemAt: ["$quiz.title", 0] },
+      },
+    },
+  ]);
+
+  if (!responses) {
+    return res.status(404).json({
+      error: {
+        message: `Couldn't find Responses of user with id ${userId}`,
+      },
     });
+  }
+
+  return res.status(200).json({
+    data: {
+      quizzes: quizzes,
+      responses: responses,
+    },
+  });
 }
 
 export default handler;

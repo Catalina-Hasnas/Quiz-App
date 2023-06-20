@@ -36,6 +36,14 @@ textarea:focus-visible {
   background-color: hsl(var(--success-hsl) / 0.2);
 }
 
+.options .wrong.checkbox:checked + p {
+  background-color: hsl(var(--failure-hsl) / 0.2);
+}
+
+.options .right.checkbox + p {
+  background-color: hsl(var(--success-hsl) / 0.2);
+}
+
 textarea {
   background-color: hsl(var(--surface4-hsl) / 0.5);
   border-radius: var(--border-radius);
