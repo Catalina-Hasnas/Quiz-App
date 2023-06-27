@@ -37,7 +37,10 @@ async function handler(req: NextApiRequest, res: NextApiResponse<unknown>) {
     return;
   }
 
-  const quizzes = await Quiz.find({ creator_id: userId }, "_id title").sort({
+  const quizzes = await Quiz.find(
+    { creator_id: userId },
+    "_id title status"
+  ).sort({
     _id: -1,
   });
 

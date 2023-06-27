@@ -34,7 +34,7 @@ const MyQuizPage = () => {
     token && router.query.myquizid ? getMyQuiz : null
   );
 
-  const handlePublishClick = async () => {
+  const handleStatusChange = async (status: string) => {
     try {
       const result = await fetch(`/api/edit_quiz/${router.query.myquizid}`, {
         method: "PATCH",
@@ -42,7 +42,7 @@ const MyQuizPage = () => {
           "Content-Type": "application/json",
           authorization: token as string,
         },
-        body: JSON.stringify({ status: "published" }),
+        body: JSON.stringify({ status: status }),
       });
       if (result.ok) {
         await getMyQuizById();
@@ -63,10 +63,23 @@ const MyQuizPage = () => {
           <p> {data.data.quiz.title} </p> <p> {data.data.quiz.description} </p>
         </>
       )}
-      <Link href={`/edit_quiz/${router.query.myquizid}`}>Edit/ View quiz</Link>
+      <Link href={`/edit_quiz/${router.query.myquizid}`}>
+        {data?.data.quiz.status === "removed" ? "View quiz" : "Edit/ View quiz"}
+      </Link>
       {data?.data.quiz.status === "draft" && (
-        <button onClick={() => handlePublishClick()} className="p-1 btn">
+        <button
+          onClick={() => handleStatusChange("published")}
+          className="p-1 btn"
+        >
           Publish
+        </button>
+      )}
+      {data?.data.quiz.status !== "removed" && (
+        <button
+          onClick={() => handleStatusChange("removed")}
+          className="p-1 btn"
+        >
+          Remove
         </button>
       )}
       <Link href={`/my_quizzes/${router.query.myquizid}/responses`}>

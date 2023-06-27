@@ -11,7 +11,7 @@ type ResponseType = Pick<ResponseModelWIthId, "_id" | "reviewed"> & {
 
 interface MyQuizzesResponse {
   data: {
-    quizzes: Pick<QuizModelWithId, "_id" | "title">[];
+    quizzes: Pick<QuizModelWithId, "_id" | "title" | "status">[];
     responses: ResponseType[];
   };
 }
@@ -43,8 +43,6 @@ const MyQuizzesPage = () => {
     return <p>Error!</p>;
   }
 
-  console.log(data?.data);
-
   return (
     <div
       style={{
@@ -60,20 +58,23 @@ const MyQuizzesPage = () => {
         <p>Quizzes that I have created</p>
         {data?.data.quizzes &&
           data?.data.quizzes.map((quiz) => (
-            <Link key={quiz._id} href={`/my_quizzes/${quiz._id}`}>
-              {quiz.title}
-            </Link>
+            <>
+              <Link key={quiz._id} href={`/my_quizzes/${quiz._id}`}>
+                {quiz.title}
+              </Link>
+
+              {quiz.status === "removed" && <span> removed </span>}
+            </>
           ))}
       </div>
 
       <div
         style={{ gridColumn: "2", display: "flex", flexDirection: "column" }}
       >
+        <p>Quizzes that I have responded to</p>
         {data?.data.responses &&
           data?.data.responses.map((response) => (
             <>
-              <p>Quizzes that I have responded to</p>
-
               <Link key={response._id} href={`/response/${response._id}`}>
                 {response.quiz_title}
               </Link>

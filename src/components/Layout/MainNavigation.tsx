@@ -18,10 +18,7 @@ const MainNavigation = () => {
       <nav className="margin-inline-auto" data-visible={`${isOpen}`}>
         <ul className="flex justify-space-around gap-2 no-bullet display-block menu-items">
           <li>
-            <Link href="/">Home</Link>
-          </li>
-          <li>
-            <Link href="/quizzes/page/1">Quizzes</Link>
+            <Link href="/quizzes/page/1">Home</Link>
           </li>
           {!token && (
             <li>
