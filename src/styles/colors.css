@@ -65,7 +65,7 @@
 
 .rad-shadow-s {
   box-shadow: 0 2.8px 2.2px
-      hsl(var(--surface-shadow) / calc(var(--shadow-strength) + 0.03));
+    hsl(var(--surface-shadow) / calc(var(--shadow-strength) + 0.03));
 }
 
 .rad-shadow {
@@ -76,15 +76,6 @@
     0 12.5px 10px
       hsl(var(--surface-shadow) / calc(var(--shadow-strength) + 0.02));
 }
-
-.text-1 {
-  color: var(--text1);
-}
-
-.text-2 {
-  color: var(--text2);
-}
-
 .surface-1 {
   background-color: var(--surface1);
   color: var(--text2);
@@ -123,4 +114,12 @@
 .failure {
   background-color: var(--failure);
   color: var(--text1);
+}
+
+.text-1 {
+  color: var(--text1);
+}
+
+.text-2 {
+  color: var(--text2);
 }

@@ -148,6 +148,7 @@ ul.display-block > * {
   cursor: pointer;
   border: none;
   border-radius: var(--border-radius);
+  transition: 100ms transform;
 }
 
 .btn.submit {
@@ -158,10 +159,20 @@ ul.display-block > * {
   background-color: hsl(var(--info-hsl) / 0.8);
 }
 
+.btn.failure {
+  background-color: hsl(var(--failure-hsl) / 0.8);
+}
+
 .btn-link {
   background-color: transparent;
   border: none;
   cursor: pointer;
+}
+
+.btn:hover,
+.btn:focus {
+  text-decoration: none;
+  transform: translateY(-0.3ch);
 }
 
 .btn-link:hover,

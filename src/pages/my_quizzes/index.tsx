@@ -44,43 +44,39 @@ const MyQuizzesPage = () => {
   }
 
   return (
-    <div
-      style={{
-        display: "grid",
-        gridTemplateColumns: "1fr 1fr",
-        gap: "16px",
-      }}
-    >
-      <div style={{ gridColumn: "1 / span 2" }}>My Quizzes page</div>
-      <div
-        style={{ gridColumn: "1", display: "flex", flexDirection: "column" }}
-      >
-        <p>Quizzes that I have created</p>
-        {data?.data.quizzes &&
-          data?.data.quizzes.map((quiz) => (
-            <>
-              <Link key={quiz._id} href={`/my_quizzes/${quiz._id}`}>
-                {quiz.title}
-              </Link>
-
-              {quiz.status === "removed" && <span> removed </span>}
-            </>
-          ))}
+    <div className="my-quizzes grid gap-1 m-y-2">
+      <div className="title surface-2 rad-shadow p-2">
+        <h1 className="text-align-center text-1">My Quizzes page</h1>
       </div>
 
-      <div
-        style={{ gridColumn: "2", display: "flex", flexDirection: "column" }}
-      >
-        <p>Quizzes that I have responded to</p>
-        {data?.data.responses &&
-          data?.data.responses.map((response) => (
-            <>
-              <Link key={response._id} href={`/response/${response._id}`}>
-                {response.quiz_title}
-              </Link>
-              <p> {response.reviewed ? "reviewed" : "not reviewed yet"} </p>
-            </>
-          ))}
+      <div className="created surface-4 rad-shadow p-1">
+        <h3 className="text-align-center m-y-1">Quizzes that I have created</h3>
+        <ul className="flex direction-column no-bullet m-y-1">
+          {data?.data.quizzes &&
+            data?.data.quizzes.map((quiz) => (
+              <li key={quiz._id}>
+                <Link key={quiz._id} href={`/my_quizzes/${quiz._id}`}>
+                  {quiz.title}
+                </Link>
+                {quiz.status !== "published" && <span className={`pill ${quiz.status}`}>{quiz.status}</span>}
+              </li>
+            ))}
+        </ul>
+      </div>
+
+      <div className="answered surface-3 rad-shadow p-1">
+        <h3 className="text-align-center m-y-1">Quizzes that I have responded to</h3>
+        <ul className="flex direction-column no-bullet m-y-1">
+          {data?.data.responses &&
+            data?.data.responses.map((response) => (
+              <li key={response._id}>
+                <Link key={response._id} href={`/response/${response._id}`}>
+                  {response.quiz_title}
+                </Link>
+                <span className={`pill ${response.reviewed && 'reviewed'}`}>{response.reviewed ? "reviewed" : "not reviewed yet"} </span>
+              </li>
+            ))}
+        </ul>
       </div>
     </div>
   );
