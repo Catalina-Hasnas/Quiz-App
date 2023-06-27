@@ -43,31 +43,33 @@ const ResponsesToMyQuiz = () => {
   }
 
   return (
-    <div>
-      <p>Responses to my quiz</p>
-      {data?.data?.responses.map((response) => {
-        return (
-          <div
-            key={response._id}
-            style={{
-              padding: "30px",
-              border: "1px solid white",
-              display: "flex",
-              flexDirection: "column",
-            }}
-          >
-            <p> {response.reviewed && "Reviewed"} </p>
-            <button style={{ padding: "5px" }} className="success">
-              <Link
-                href={`/my_quizzes/${router.query.myquizid}/responses/${response._id}`}
-              >
-                OPEN
-              </Link>
-            </button>
-            <p> Respondent: {response.respondent} </p>
-          </div>
-        );
-      })}
+    <div className="responses-page surface-3 m-y-2 p-x-2 flex direction-column">
+      <h1 className="text-align-center m-y-2">Responses to my quiz</h1>
+      <div className="grid gap-2 responses">
+        {data?.data?.responses.map((response) => {
+          return (
+            <div
+              key={response._id}
+              className={`response p-1 ${response.reviewed && "reviewed"}`}
+            >
+              <p className="respondent">
+                Respondent: <span>{response.respondent}</span>
+              </p>
+              <div className="flex gap-0 align-items-center m-y-1">
+                <Link
+                  href={`/my_quizzes/${router.query.myquizid}/responses/${response._id}`}
+                  className="btn info p-x-2"
+                >
+                  OPEN
+                </Link>
+                <span className="pill reviewed">
+                  {response.reviewed && "Reviewed"}
+                </span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 };

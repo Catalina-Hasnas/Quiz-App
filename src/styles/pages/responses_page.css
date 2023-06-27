@@ -1,0 +1,35 @@
+.responses-page {
+  font-size: larger;
+}
+
+.responses {
+  margin-bottom: 2rem;
+  grid-template-columns: minmax(0, 1fr) 1fr;
+}
+
+.response {
+  border: 1px solid;
+  background-color: hsl(var(--surface2-hsl) / 0.5);
+  border-color: var(--accent);
+}
+
+.response.reviewed {
+  grid-column: 2;
+  border-color: var(--text2);
+  background-color: var(--surface3);
+}
+
+@media (max-width: 35em) {
+  .responses-page {
+    font-size: 1rem;
+  }
+  .responses-page h1 {
+    font-size: 1.5rem;
+  }
+  .responses {
+    grid-template-columns: 1fr;
+  }
+  .response.reviewed {
+    grid-column: auto;
+  }
+}
