@@ -1,9 +1,12 @@
 import QuizCard from "@/components/Quiz/QuizCard";
 import Quiz, { QuizModelWithId } from "@/models/quiz";
 import { connectToDatabase } from "@/services/database.service";
+import { Field, Form, Formik } from "formik";
 import { GetStaticProps } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import useSWR from "swr";
 
 export interface QuizPageData
   extends Omit<QuizModelWithId, "creator_id" | "questions" | "status"> {
@@ -12,20 +15,63 @@ export interface QuizPageData
 
 export interface QuizzesPageProps {
   data: QuizPageData[];
-  currentPage: number;
   totalPages: number;
 }
 
-const QuizzesPage = ({ data, currentPage, totalPages }: QuizzesPageProps) => {
+export const ITEMS_PER_PAGE = 5;
+
+const QuizzesPage = ({ data, totalPages }: QuizzesPageProps) => {
+  const router = useRouter();
+
+  const currentPage = parseInt(router.query.page as string);
+
+  const url = `/api/quizzes?search=${router.query.search}?&currentPage=${router.query.page}`;
+
+  const getFilteredQuizzes = async () => {
+    const result = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    return result.json();
+  };
+
+  const { data: filteredData, isLoading } = useSWR<{ data: QuizzesPageProps }>(
+    router.query.search ? [url, router.query.search, router.query.page] : null,
+    router.query.search ? getFilteredQuizzes : null
+  );
+
+  useEffect(() => {
+    if (filteredData) {
+      setQuizzesPageData(filteredData.data);
+    } else {
+      setQuizzesPageData(undefined);
+    }
+  }, [filteredData]);
+
+  const [quizzesPageData, setQuizzesPageData] = useState<
+    QuizzesPageProps | undefined
+  >({
+    data,
+    totalPages,
+  });
+
   const startPage = currentPage - 2 <= 0 ? 1 : currentPage - 2;
-  
+
   const pages = Array.from({ length: 5 }, (_, index) => {
-    if(startPage + index > totalPages) {
+    const totalItems = quizzesPageData?.totalPages ?? totalPages;
+    if (startPage + index > totalItems) {
       return;
     }
+
     return (
       <Link
-        href={`/quizzes/page/${startPage + index}`}
+        href={
+          router.query.search
+            ? `/quizzes/page/${startPage + index}?search=${router.query.search}`
+            : `/quizzes/page/${startPage + index}`
+        }
         key={startPage + index}
       >
         <span
@@ -39,28 +85,59 @@ const QuizzesPage = ({ data, currentPage, totalPages }: QuizzesPageProps) => {
     );
   });
 
-  const router = useRouter();
+  const handleSubmit = async (values: { searchQuery: string }) => {
+    if (!router.query.search || router.query.search !== values.searchQuery) {
+      router.push(`/quizzes/page/1?search=${values.searchQuery}`);
+    }
+  };
 
-  if (router.isFallback) {
-    return <div>Loading...</div>;
-  }
+  const some = quizzesPageData?.data ?? data;
 
   return (
     <>
-      <h1 className="m-y-2">Quizzes page</h1>
-      <div className="grid gap-3 quiz-list">
-        {data.map((quiz, index) => {
-          return <QuizCard key={index} {...quiz} />;
-        })}
-        <div className="flex gap-0 justify-center align-items-center font-size-l font-weight-600 rad-shadow surface-3 p-2">
-          {pages}
-        </div>
+      <div className="flex gap-0 direction-column p-1 m-1 surface-2 rad-shadow">
+        <h1 className="text-align-center text-1">Quizzes page</h1>
+        <Formik
+          initialValues={{ searchQuery: `${router.query.search ?? ""}` }}
+          onSubmit={handleSubmit}
+        >
+          <Form className="flex justify-center">
+            <Field
+              className="text-2 text-align-center font-size-m search-field"
+              type="text"
+              name="searchQuery"
+              placeholder="Search..."
+            />
+            <button type="submit" className="p-1 btn-link text-1 search-button">
+              <i className="gg-search"></i>
+            </button>
+            <button
+              type="reset"
+              onClick={() => {
+                router.push("/quizzes/page/1");
+              }}
+              className="p-1 btn-link text-1 search-button"
+            >
+              X
+            </button>
+          </Form>
+        </Formik>
       </div>
+      {router.isFallback || isLoading ? (
+        <div>Loading...</div>
+      ) : (
+        <div className="grid gap-3 quiz-list">
+          {some.map((quiz, index) => {
+            return <QuizCard key={index} {...quiz} />;
+          })}
+          <div className="flex gap-0 justify-center align-items-center font-size-l font-weight-600 rad-shadow surface-3 p-2">
+            {pages}
+          </div>
+        </div>
+      )}
     </>
   );
 };
-
-const ITEMS_PER_PAGE = 5;
 
 const getTotalPages = async () => {
   const totalItems = await Quiz.countDocuments();
@@ -85,17 +162,31 @@ export const getStaticProps: GetStaticProps<QuizzesPageProps> = async ({
   await connectToDatabase();
 
   const currentPage = parseInt(params?.page as string);
-  const totalItems = await Quiz.countDocuments();
-  const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
 
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
 
-  const docs = await Quiz.aggregate([
+  const totalItemsPipeline = [
     {
       $match: { status: "published" },
     },
     {
-      $sort: { _id: -1 },
+      $count: "totalItems",
+    },
+  ];
+
+  const totalItemsResult = await Quiz.aggregate(totalItemsPipeline);
+  const totalItems = totalItemsResult[0]?.totalItems || 0;
+
+  const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
+
+  const sortCriteria: Record<string, 1 | -1> = { _id: -1 };
+
+  const pipeline = [
+    {
+      $match: { status: "published" },
+    },
+    {
+      $sort: sortCriteria,
     },
     {
       $skip: startIndex,
@@ -119,14 +210,15 @@ export const getStaticProps: GetStaticProps<QuizzesPageProps> = async ({
         description: 1,
       },
     },
-  ]);
+  ];
+
+  const docs = await Quiz.aggregate(pipeline);
 
   const data = JSON.parse(JSON.stringify(docs)) as QuizPageData[];
 
   return {
     props: {
       data,
-      currentPage,
       totalPages,
     },
     revalidate: currentPage === 1 ? 1 : undefined,
