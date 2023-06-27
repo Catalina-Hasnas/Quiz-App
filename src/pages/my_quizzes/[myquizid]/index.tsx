@@ -56,35 +56,42 @@ const MyQuizPage = () => {
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column" }}>
+    <div className="my-quiz-id m-y-1 p-2 surface-3 text-1 rad-shadow flex direction-column">
       {isLoading && <p>is loading...</p>}
       {data && (
         <>
-          <p> {data.data.quiz.title} </p> <p> {data.data.quiz.description} </p>
+          <h1>{data.data.quiz.title}</h1>
+          <div className="description p-2 m-y-2">
+            <p>{data.data.quiz.description}</p>
+          </div>
         </>
       )}
-      <Link href={`/edit_quiz/${router.query.myquizid}`}>
-        {data?.data.quiz.status === "removed" ? "View quiz" : "Edit/ View quiz"}
-      </Link>
-      {data?.data.quiz.status === "draft" && (
-        <button
-          onClick={() => handleStatusChange("published")}
-          className="p-1 btn"
-        >
-          Publish
-        </button>
-      )}
-      {data?.data.quiz.status !== "removed" && (
-        <button
-          onClick={() => handleStatusChange("removed")}
-          className="p-1 btn"
-        >
-          Remove
-        </button>
-      )}
-      <Link href={`/my_quizzes/${router.query.myquizid}/responses`}>
-        View Responses
-      </Link>
+      <div className="buttons flex wrap grow text-align-center justify-center align-items-center m-y-2 p-x-2">
+        <Link href={`/edit_quiz/${router.query.myquizid}`} className="btn info p-05 p-x-2">
+          {data?.data.quiz.status === "removed"
+            ? "View quiz"
+            : "Edit / View quiz"}
+        </Link>
+        {data?.data.quiz.status === "draft" && (
+          <button
+            onClick={() => handleStatusChange("published")}
+            className="btn line-height-2 submit p-05 p-x-2"
+          >
+            Publish
+          </button>
+        )}
+        {data?.data.quiz.status !== "removed" && (
+          <button
+            onClick={() => handleStatusChange("removed")}
+            className="btn line-height-2 failure p-05 p-x-2"
+          >
+            Remove
+          </button>
+        )}
+        <Link href={`/my_quizzes/${router.query.myquizid}/responses`} className="btn info p-05 p-x-2">
+          View Responses
+        </Link>
+      </div>
     </div>
   );
 };
