@@ -45,10 +45,14 @@ const QuizzesPage = ({ data, totalPages }: QuizzesPageProps) => {
   useEffect(() => {
     if (filteredData) {
       setQuizzesPageData(filteredData.data);
+    } else {
+      setQuizzesPageData(undefined);
     }
   }, [filteredData]);
 
-  const [quizzesPageData, setQuizzesPageData] = useState<QuizzesPageProps>({
+  const [quizzesPageData, setQuizzesPageData] = useState<
+    QuizzesPageProps | undefined
+  >({
     data,
     totalPages,
   });
@@ -81,23 +85,22 @@ const QuizzesPage = ({ data, totalPages }: QuizzesPageProps) => {
     );
   });
 
-  if (router.isFallback || isLoading) {
-    return <div>Loading...</div>;
-  }
-
   const handleSubmit = async (values: { searchQuery: string }) => {
     if (!router.query.search || router.query.search !== values.searchQuery) {
-      router.replace(`/quizzes/page/1?search=${values.searchQuery}`);
+      router.push(`/quizzes/page/1?search=${values.searchQuery}`);
     }
   };
 
-  const some = quizzesPageData.data ?? data;
+  const some = quizzesPageData?.data ?? data;
 
   return (
     <>
       <div className="flex gap-0 direction-column p-1 m-1 surface-2 rad-shadow">
         <h1 className="text-align-center text-1">Quizzes page</h1>
-        <Formik initialValues={{ searchQuery: "" }} onSubmit={handleSubmit}>
+        <Formik
+          initialValues={{ searchQuery: `${router.query.search ?? ""}` }}
+          onSubmit={handleSubmit}
+        >
           <Form className="flex justify-center">
             <Field
               className="text-2 text-align-center font-size-m search-field"
@@ -109,9 +112,9 @@ const QuizzesPage = ({ data, totalPages }: QuizzesPageProps) => {
               <i className="gg-search"></i>
             </button>
             <button
+              type="reset"
               onClick={() => {
-                router.replace("/quizzes/page/1");
-                router.reload();
+                router.push("/quizzes/page/1");
               }}
               className="p-1 btn-link text-1 search-button"
             >
@@ -120,14 +123,18 @@ const QuizzesPage = ({ data, totalPages }: QuizzesPageProps) => {
           </Form>
         </Formik>
       </div>
-      <div className="grid gap-3 quiz-list">
-        {some.map((quiz, index) => {
-          return <QuizCard key={index} {...quiz} />;
-        })}
-        <div className="flex gap-0 justify-center align-items-center font-size-l font-weight-600 rad-shadow surface-3 p-2">
-          {pages}
+      {router.isFallback || isLoading ? (
+        <div>Loading...</div>
+      ) : (
+        <div className="grid gap-3 quiz-list">
+          {some.map((quiz, index) => {
+            return <QuizCard key={index} {...quiz} />;
+          })}
+          <div className="flex gap-0 justify-center align-items-center font-size-l font-weight-600 rad-shadow surface-3 p-2">
+            {pages}
+          </div>
         </div>
-      </div>
+      )}
     </>
   );
 };
