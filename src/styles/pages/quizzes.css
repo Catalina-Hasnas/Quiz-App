@@ -1,0 +1,78 @@
+/* Quizzes page */
+
+.quiz-list {
+  margin-bottom: 5rem;
+  /* First we define how many items we want to be displayed in max width scenario */
+  /* For example if we want 3 columns we would divide --max-width in 4 */
+  /* (3 parts for cards and 1 part for spacing in-between) */
+  --column-min-width: calc(var(--max-width) / 4);
+
+  /* To make the grid responsive we use repeat in combination with auto-fill */
+  /* this will fill the row with as many columns as it can fit */
+  
+  /* grid-template-columns: repeat(auto-fill, var(--row-min-width)); */
+  
+  /* if we would use just the min width as second parameter */
+  /* the rows would be rigid - same fixed size all the time */
+  /* and we will not be using all the space available */
+
+  /* to fix this we use minmax() function where we pass 1fr */
+  /* as second argument to allow the columns to grow to larger */
+  /* widths that min-width */
+  grid-template-columns: repeat(auto-fill, minmax(var(--column-min-width), 1fr));
+}
+
+.accent-box {
+  border: solid 2px;
+  border-color: hsl(var(--accent-hsl) / 0.4);
+}
+
+.line-decorated {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+}
+
+.line-decorated::before,
+.line-decorated::after {
+  content: "";
+  border-top: 0.1rem double var(--text1);
+  align-self: center;
+  margin: 0 1rem;
+}
+
+.quiz-card {
+  position: relative;
+}
+
+.quiz-card .author-pile {
+  position: absolute;
+  top: 0;
+  right: 0;
+  border-radius: 0 0 0 20px;
+  padding-left: var(--base-spacing);
+}
+
+.quiz-card .open-btn {
+  margin-block: 1rem;
+  overflow: hidden;
+}
+
+.quiz-card .description {
+  height: 6rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.quiz-card .title {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  max-width: 25ch;
+}
+
+.quiz-card .open-btn:hover,
+.quiz-card .open-btn:focus {
+  text-decoration: none;
+  background-color: hsl(var(--success-hsl) / 0.8);
+}
