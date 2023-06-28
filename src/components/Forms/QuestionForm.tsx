@@ -15,7 +15,7 @@ const QuestionForm = ({
   children,
 }: QuestionFormProps) => {
   return (
-    <div className="grow-1 p-2">
+    <div className="flex direction-column grow-1 m-y-2">
       <Field type="text" name={titleFieldName} disabled={disableFields} />
       <Field as="select" name={typeFieldName} disabled={disableFields}>
         <option value="open">Free input</option>

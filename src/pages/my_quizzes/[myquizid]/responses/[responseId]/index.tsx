@@ -136,7 +136,7 @@ const MyQuizzesResponsePage = () => {
       {({ values }) => (
         <div className="flex direction-row grow height-100">
           <Form>
-            {message && <p>{message}</p>}
+            {message && <h3 className="m-y-2">{message}</h3>}
             <QuestionForm
               titleFieldName={`answers[${currentQuestionIndex}].title`}
               typeFieldName={`answers[${currentQuestionIndex}].type`}
@@ -172,6 +172,7 @@ const MyQuizzesResponsePage = () => {
                       return (
                         <input
                           {...field}
+                          className="align-self-baseline"
                           type="checkbox"
                           onChange={(e) => {
                             field.onChange(e);
@@ -188,7 +189,7 @@ const MyQuizzesResponsePage = () => {
                 </>
               )}
             </QuestionForm>
-            <p>{`${rightAnswersNumber}/${data?.response.answers.length}`}</p>
+            <h3>{`${rightAnswersNumber}/${data?.response.answers.length}`}</h3>
             {!data?.response.reviewed && (
               <button
                 className="align-self-center line-height-2 p-x-2 m-y-2 btn submit"

@@ -1,0 +1,19 @@
+.my-quiz-id .description {
+  border: 1px solid;
+  position: relative;
+}
+
+.my-quiz-id .description::before {
+  content: "Description:";
+  display: block;
+  position: absolute;
+  top: -1rem;
+  background-color: var(--surface3);
+  padding-inline: 1ch;
+  border: 1px solid;
+}
+
+.my-quiz-id .buttons > * {
+  font-weight: 600;
+  min-width: max-content;
+}

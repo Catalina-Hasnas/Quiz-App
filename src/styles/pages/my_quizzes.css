@@ -1,0 +1,79 @@
+.my-quizzes {
+  grid-template-columns: 1fr 1fr;
+  grid-template-areas:
+    "title title"
+    "created answered";
+}
+
+.my-quizzes .created,
+.my-quizzes .answered {
+  font-size: 1.2rem;
+}
+
+@media (max-width: 35em) {
+  .my-quizzes {
+    grid-template-columns: 1fr;
+    grid-template-areas: "title" "created" "answered";
+  }
+  .my-quizzes .created,
+  .my-quizzes .answered {
+    font-size: 1rem;
+  }
+}
+
+.my-quizzes .title {
+  grid-area: title;
+}
+
+.my-quizzes .created {
+  grid-area: created;
+}
+
+.my-quizzes .answered {
+  grid-area: answered;
+}
+
+.my-quizzes h3::after {
+  content: "";
+  display: block;
+  width: 80%;
+  background-color: var(--text1);
+  height: 1px;
+  margin-inline: auto;
+  margin-block: 1rem;
+  margin-bottom: 2rem;
+}
+
+.my-quizzes .answered ul li::before {
+  content: "💬";
+  margin-inline: 1ch;
+}
+
+.my-quizzes .created ul li::before {
+  grid-area: created;
+  content: "⚡";
+  margin-inline: 1ch;
+}
+
+.pill {
+  --pill-bg: var(--info);
+  font-size: smaller;
+  font-weight: 500;
+  padding-inline: 1.25ch;
+  margin-inline: 1ch;
+  display: inline-block;
+  border-radius: 1rem;
+  background-color: var(--pill-bg);
+}
+
+.pill.removed {
+  --pill-bg: var(--failure);
+}
+
+.pill.draft {
+  --pill-bg: var(--warning);
+}
+
+.pill.reviewed {
+  --pill-bg: hsl(var(--success-hsl) / 0.7);
+}
