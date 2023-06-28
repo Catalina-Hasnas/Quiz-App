@@ -53,6 +53,10 @@
 .flex > .align-self-center {
   align-self: center;
 }
+
+.flex > .align-self-stretch {
+  align-self: stretch;
+}
 /* Spacing */
 
 .m-y-1 {
@@ -138,6 +142,10 @@ ul.display-block > * {
 
 .width-100 {
   width: 100%;
+}
+
+.width-max-content {
+  width: max-content;
 }
 
 /*******************************/

@@ -1,7 +1,6 @@
 import { createUser, loginUser } from "@/services/auth/auth";
 import { useRouter } from "next/router";
 import { FormEvent, useContext, useRef, useState } from "react";
-import classes from "./login.module.css";
 import { AuthContext } from "./_app";
 
 const AuthPage = () => {
@@ -59,33 +58,37 @@ const AuthPage = () => {
   };
 
   return (
-    <section className={classes.auth}>
-      <h1>{isLogin ? "Login" : "Sign Up"}</h1>
-      <form onSubmit={(event) => submitHandler(event)}>
+    <section className="auth flex text-align-center direction-column gap-2 align-items-center surface-3 m-y-2 p-2 text-1 rad-shadow margin-inline-auto width-max-content">
+      <h1 className="align-self-stretch">{isLogin ? "Login" : "Sign Up"}</h1>
+      <form
+        className="flex direction-column gap-2"
+        onSubmit={(event) => submitHandler(event)}
+      >
         {!isLogin && (
-          <div className={classes.control}>
-            <label htmlFor="name">Your Name</label>
+          <div className="flex direction-column input-group">
+            <label className="align-self-baseline" htmlFor="name">Name</label>
             <input type="text" id="name" required ref={nameInputRef} />
           </div>
         )}
-        <div className={classes.control}>
-          <label htmlFor="email">Your Email</label>
-          <input type="email" id="email" required ref={emailInputRef} />
+        <div className="flex direction-column input-group">
+          <label className="align-self-baseline" htmlFor="email">Email</label>
+          <input type="email" id="email" required ref={emailInputRef} autoComplete="off"/>
         </div>
-        <div className={classes.control}>
-          <label htmlFor="password">Your Password</label>
+        <div className="flex direction-column input-group">
+          <label className="align-self-baseline" htmlFor="password">Password</label>
           <input
             type="password"
             id="password"
             required
             ref={passwordInputRef}
+            autoComplete="off"
           />
         </div>
-        <div className={classes.actions}>
-          <button>{isLogin ? "Login" : "Create Account"}</button>
+        <div className={"flex direction-column actions"}>
+          <button className="btn m-y-1 success line-height-2  font-size-m">{isLogin ? "Login" : "Create Account"}</button>
           <button
             type="button"
-            className={classes.toggle}
+            className="btn-link toggle m-y-2"
             onClick={() => setIsLogin(!isLogin)}
           >
             {isLogin ? "Create new account" : "Login with existing account"}

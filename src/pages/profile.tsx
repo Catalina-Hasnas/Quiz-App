@@ -1,7 +1,6 @@
 import { updateUserPassword } from "@/services/auth/auth";
 import { useRouter } from "next/router";
 import { FormEvent, useContext, useRef } from "react";
-import classes from "./profile.module.css";
 import { AuthContext } from "./_app";
 
 function ProfilePage() {
@@ -36,23 +35,23 @@ function ProfilePage() {
   };
 
   if (!token) {
-    return <div> Please sign in in order to view this page </div>;
+    return <div className="warning rad-shadow m-y-2 p-2 p-x-3 font-size-m text-align-center"> Please sign in in order to view this page </div>;
   }
 
   return (
-    <section className={classes.profile}>
-      <h1>Your User Profile</h1>
-      <form className={classes.form} onSubmit={submitHandler}>
-        <div className={classes.control}>
+    <section className="profile flex surface-3 rad-shadow margin-inline-auto gap-2 direction-column m-y-2 p-2 p-x-3">
+      <h1>User Profile</h1>
+      <form className="flex direction-column" onSubmit={submitHandler}>
+        <div className="flex direction-column">
           <label htmlFor="new-password">New Password</label>
-          <input type="password" id="new-password" ref={newPassRef} />
+          <input type="password" id="new-password" ref={newPassRef} autoComplete="false"/>
         </div>
-        <div className={classes.control}>
+        <div className="flex direction-column">
           <label htmlFor="old-password">Old Password</label>
-          <input type="password" id="old-password" ref={oldPassRef} />
+          <input type="password" id="old-password" ref={oldPassRef} autoComplete="false"/>
         </div>
-        <div className={classes.action}>
-          <button>Change Password</button>
+        <div className="">
+          <button className="btn failure line-height-2 p-05 font-weight-600">Change Password</button>
         </div>
       </form>
     </section>

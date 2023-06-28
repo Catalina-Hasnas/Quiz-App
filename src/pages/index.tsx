@@ -14,50 +14,50 @@ export default function Home() {
           </button>
         </div>
       </div>
-      <div className="flex grow gap-2 m-1">
+      <div className="flex grow gap-1 m-1">
         <div className="brand rad-shadow p-1">
-          <h1 className="text-1">Text1</h1>
-          <h1 className="text-2">Text2</h1>
+          <h1 className="text-1">Brand Text1</h1>
+          <h1 className="text-2">Brand Text2</h1>
         </div>
         <div className="accent rad-shadow p-1">
-          <h1 className="text-1">Text1</h1>
-          <h1 className="text-2">Text2</h1>
+          <h1 className="text-1">Accent Text1</h1>
+          <h1 className="text-2">Accent Text2</h1>
         </div>
       </div>
       <div className="flex wrap grow m-1 surface-demo">
         <div className="surface-1 rad-shadow p-1">
-          <h1 className="text-1">Text1</h1>
-          <h1 className="text-2">Text2</h1>
+          <h1 className="text-1">Surface-1</h1>
+          <h1 className="text-2">Surface-1</h1>
         </div>
         <div className="surface-2 rad-shadow p-1">
-          <h1 className="text-1">Text1</h1>
-          <h1 className="text-2">Text2</h1>
+          <h1 className="text-1">Surface-2</h1>
+          <h1 className="text-2">Surface-2</h1>
         </div>
         <div className="surface-3 rad-shadow p-1">
-          <h1 className="text-1">Text1</h1>
-          <h1 className="text-2">Text2</h1>
+          <h1 className="text-1">Surface-3</h1>
+          <h1 className="text-2">Surface-3</h1>
         </div>
         <div className="surface-4 rad-shadow p-1">
-          <h1 className="text-1">Text1</h1>
-          <h1 className="text-2">Text2</h1>
+          <h1 className="text-1">Surface-4</h1>
+          <h1 className="text-2">Surface-4</h1>
         </div>
       </div>
       <div className="flex wrap grow colors-demo m-1">
         <div className="info rad-shadow p-1">
-          <h1 className="text-1">Text1</h1>
-          <h1 className="text-2">Text2</h1>
+          <h1 className="text-1">Info</h1>
+          <h1 className="text-2">Info</h1>
         </div>
         <div className="success rad-shadow p-1">
-          <h1 className="text-1">Text1</h1>
-          <h1 className="text-2">Text2</h1>
+          <h1 className="text-1">Success</h1>
+          <h1 className="text-2">Success</h1>
         </div>
         <div className="warning rad-shadow p-1">
-          <h1 className="text-1">Text1</h1>
-          <h1 className="text-2">Text2</h1>
+          <h1 className="text-1">Warning</h1>
+          <h1 className="text-2">Warning</h1>
         </div>
         <div className="failure rad-shadow p-1">
-          <h1 className="text-1">Text1</h1>
-          <h1 className="text-2">Text2</h1>
+          <h1 className="text-1">Failure</h1>
+          <h1 className="text-2">Failure</h1>
         </div>
       </div>
       <main style={{ display: "flex", flexDirection: "column" }}></main>
