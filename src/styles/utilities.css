@@ -54,6 +54,10 @@
   align-self: center;
 }
 
+.flex > .align-self-start {
+  align-self: flex-start;
+}
+
 .flex > .align-self-stretch {
   align-self: stretch;
 }

@@ -148,6 +148,15 @@ const EditQuestionPage = () => {
                 >
                   Submit
                 </button>
+                <button
+                  className="align-self-start line-height-2 p-x-2 m-y-2 btn"
+                  type="button"
+                  onClick={() => {
+                    router.replace("/my_quizzes");
+                  }}
+                >
+                  Save as draft
+                </button>
               </>
             </QuestionForm>
           </Form>
