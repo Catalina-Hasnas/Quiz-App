@@ -161,31 +161,32 @@ async function handler(req: NextApiRequest, res: NextApiResponse<unknown>) {
               },
             });
           });
-      }
-      Quiz.findOneAndUpdate(
-        { _id: quizId },
-        { $set: formatObject({ obj: req.body, editQuestion: false }) },
-        { new: true }
-      )
-        .then((quiz) => {
-          if (!quiz) {
-            return res.status(404).json({
+      } else {
+        Quiz.findOneAndUpdate(
+          { _id: quizId },
+          { $set: formatObject({ obj: req.body, editQuestion: false }) },
+          { new: true }
+        )
+          .then((quiz) => {
+            if (!quiz) {
+              return res.status(404).json({
+                error: {
+                  message: `Question with ID ${questionId} not found in Quiz with ID ${quizId}`,
+                },
+              });
+            }
+            return res.status(200).json({
+              data: quiz,
+            });
+          })
+          .catch((err) => {
+            return res.status(500).json({
               error: {
-                message: `Question with ID ${questionId} not found in Quiz with ID ${quizId}`,
+                message: `Couldn't update quiz with id ${quizId}: ${err}`,
               },
             });
-          }
-          return res.status(200).json({
-            data: quiz,
           });
-        })
-        .catch((err) => {
-          return res.status(500).json({
-            error: {
-              message: `Couldn't update quiz with id ${quizId}: ${err}`,
-            },
-          });
-        });
+      }
     }
   }
 }

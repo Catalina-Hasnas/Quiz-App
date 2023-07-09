@@ -1,3 +1,4 @@
+import Loading from "@/components/Loading/Loading";
 import { ResponseModelWIthId } from "@/models/response";
 import { AuthContext } from "@/pages/_app";
 import Link from "next/link";
@@ -39,7 +40,7 @@ const ResponsesToMyQuiz = () => {
   );
 
   if (isLoading) {
-    return <p> is loading...</p>;
+    return <Loading />;
   }
 
   return (

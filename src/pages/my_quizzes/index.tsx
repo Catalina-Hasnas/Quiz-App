@@ -4,6 +4,7 @@ import { useContext } from "react";
 import { QuizModelWithId } from "@/models/quiz";
 import { AuthContext } from "@/pages/_app";
 import { ResponseModelWIthId } from "@/models/response";
+import Loading from "@/components/Loading/Loading";
 
 type ResponseType = Pick<ResponseModelWIthId, "_id" | "reviewed"> & {
   quiz_title: string;
@@ -36,7 +37,7 @@ const MyQuizzesPage = () => {
   );
 
   if (isLoading) {
-    return <p>Loading...</p>;
+    return <Loading />;
   }
 
   if (error) {
@@ -58,14 +59,18 @@ const MyQuizzesPage = () => {
                 <Link key={quiz._id} href={`/my_quizzes/${quiz._id}`}>
                   {quiz.title}
                 </Link>
-                {quiz.status !== "published" && <span className={`pill ${quiz.status}`}>{quiz.status}</span>}
+                {quiz.status !== "published" && (
+                  <span className={`pill ${quiz.status}`}>{quiz.status}</span>
+                )}
               </li>
             ))}
         </ul>
       </div>
 
       <div className="answered surface-3 rad-shadow p-1">
-        <h3 className="text-align-center m-y-1">Quizzes that I have responded to</h3>
+        <h3 className="text-align-center m-y-1">
+          Quizzes that I have responded to
+        </h3>
         <ul className="flex direction-column no-bullet m-y-1">
           {data?.data.responses &&
             data?.data.responses.map((response) => (
@@ -73,7 +78,9 @@ const MyQuizzesPage = () => {
                 <Link key={response._id} href={`/response/${response._id}`}>
                   {response.quiz_title}
                 </Link>
-                <span className={`pill ${response.reviewed && 'reviewed'}`}>{response.reviewed ? "reviewed" : "not reviewed yet"} </span>
+                <span className={`pill ${response.reviewed && "reviewed"}`}>
+                  {response.reviewed ? "reviewed" : "not reviewed yet"}{" "}
+                </span>
               </li>
             ))}
         </ul>

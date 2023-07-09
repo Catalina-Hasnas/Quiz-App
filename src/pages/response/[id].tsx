@@ -8,6 +8,7 @@ import QuestionForm from "@/components/Forms/QuestionForm";
 import CreateResponseOptionForm from "@/components/Forms/CreateResponseOptionForm";
 import { ResponseModelWIthId } from "@/models/response";
 import useSWR from "swr";
+import Loading from "@/components/Loading/Loading";
 
 export interface ResponseInitialValues {
   answers: QuizModelWithId["questions"];
@@ -65,7 +66,7 @@ const ResponsePage = () => {
   }, [data]);
 
   if (isLoading) {
-    return <p>is loading...</p>;
+    return <Loading />;
   }
 
   if (error) {

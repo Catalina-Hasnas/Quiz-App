@@ -7,6 +7,7 @@ import { Form, Formik, FormikHelpers } from "formik";
 import QuestionForm from "@/components/Forms/QuestionForm";
 import CreateQuizOptionForm from "@/components/Forms/CreateQuizOptionForm";
 import Sidebar from "@/components/Sidebar/Sidebar";
+import Loading from "@/components/Loading/Loading";
 
 export type QuizResponse = {
   data: {
@@ -53,7 +54,7 @@ const EditQuestionPage = () => {
   }
 
   if (isLoading || !router.query.quizId) {
-    return <p>...is loading</p>;
+    return <Loading />;
   }
 
   const initialValues: QuestionModel = {
@@ -101,7 +102,7 @@ const EditQuestionPage = () => {
       }
     }
 
-    // edit currenct question
+    // edit current question
     if (currentQuestionId) {
       try {
         const result = await fetch(
@@ -174,3 +175,7 @@ const EditQuestionPage = () => {
 };
 
 export default EditQuestionPage;
+
+export async function getServerSideProps() {
+  return { props: {} };
+}

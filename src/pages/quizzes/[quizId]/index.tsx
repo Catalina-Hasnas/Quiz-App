@@ -9,6 +9,7 @@ import { Field, FieldProps, Form, Formik } from "formik";
 import { AuthContext } from "@/pages/_app";
 import QuestionForm from "@/components/Forms/QuestionForm";
 import CreateResponseOptionForm from "@/components/Forms/CreateResponseOptionForm";
+import Loading from "@/components/Loading/Loading";
 
 interface QuizPageProps {
   data: QuizModelWithId;
@@ -59,7 +60,7 @@ const QuizPage = ({ data }: QuizPageProps) => {
   };
 
   if (router.isFallback) {
-    return <div>Loading...</div>;
+    return <Loading />;
   }
 
   return (

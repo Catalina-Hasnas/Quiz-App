@@ -1,3 +1,4 @@
+import Loading from "@/components/Loading/Loading";
 import QuizCard from "@/components/Quiz/QuizCard";
 import Quiz, { QuizModelWithId } from "@/models/quiz";
 import { connectToDatabase } from "@/services/database.service";
@@ -124,7 +125,7 @@ const QuizzesPage = ({ data, totalPages }: QuizzesPageProps) => {
         </Formik>
       </div>
       {router.isFallback || isLoading ? (
-        <div>Loading...</div>
+        <Loading />
       ) : (
         <div className="grid gap-3 quiz-list">
           {some.map((quiz, index) => {
