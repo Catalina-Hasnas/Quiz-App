@@ -120,7 +120,6 @@ const MyQuizzesResponsePage = () => {
       });
       if (result.ok) {
         const data = await result.json();
-        console.log(data);
         // router.replace(`/response/${data.data.response_id}`);
       } else {
         const errorData = await result.json();

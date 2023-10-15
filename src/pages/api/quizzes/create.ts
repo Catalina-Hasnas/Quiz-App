@@ -3,7 +3,8 @@ import User from "@/models/user";
 import { connectToDatabase } from "@/services/database.service";
 import { ICreateQuizResponse } from "@/services/quiz/types";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { getToken } from "next-auth/jwt";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "../auth/[...nextauth]";
 
 async function handler(
   req: NextApiRequest,
@@ -14,13 +15,14 @@ async function handler(
   }
 
   const { title, description } = req.body;
-
-  const tokenServer = await getToken({
-    req,
-    secret: process.env.ACCESS_TOKEN_SECRET,
-  });
-  if (!tokenServer?.user) {
-    return res.status(401);
+  const session = await getServerSession(req, res, authOptions);
+  if (!session?.user) {
+    return res.status(401).json({
+      data: null,
+      error: {
+        message: "You're not authorized.",
+      },
+    });
   }
 
   await connectToDatabase();
@@ -28,7 +30,7 @@ async function handler(
   let existingUser;
   try {
     existingUser = await User.findOne({
-      email: tokenServer?.user?.email ?? "",
+      email: session.user.email,
     });
   } catch (err) {
     return res.status(500).json({

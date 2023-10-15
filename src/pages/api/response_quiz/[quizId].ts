@@ -4,24 +4,24 @@ import User from "@/models/user";
 import { connectToDatabase } from "@/services/database.service";
 import mongoose from "mongoose";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { getToken } from "next-auth/jwt";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "../auth/[...nextauth]";
 
 async function handler(req: NextApiRequest, res: NextApiResponse<unknown>) {
   const quizId = req.query.quizId;
-  
-  const tokenServer = await getToken({
-    req,
-    secret: process.env.ACCESS_TOKEN_SECRET,
-  });
-  if(!tokenServer?.user) {
-    return res.status(401);
+
+  const session = await getServerSession(req, res, authOptions);
+  if (!session?.user) {
+    return res.status(401).json({
+      error: "You're not authorized.",
+    });
   }
 
   await connectToDatabase();
 
   let existingUser;
   try {
-    existingUser = await User.findOne({ email: tokenServer?.user?.email ?? "" });
+    existingUser = await User.findOne({ email: session.user.email });
   } catch (err) {
     return res.status(500).json({
       error: {
