@@ -1,13 +1,14 @@
 import { QuestionModel, QuestionModelWithId } from "@/models/question";
-import { AuthContext } from "@/pages/_app";
+// import { AuthContext } from "@/pages/_app";
 import { useRouter } from "next/router";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import useSWR from "swr";
 import { Form, Formik, FormikHelpers } from "formik";
 import QuestionForm from "@/components/Forms/QuestionForm";
 import CreateQuizOptionForm from "@/components/Forms/CreateQuizOptionForm";
 import Sidebar from "@/components/Sidebar/Sidebar";
 import Loading from "@/components/Loading/Loading";
+import { useSession } from "next-auth/react";
 
 export type QuizResponse = {
   data: {
@@ -18,7 +19,8 @@ export type QuizResponse = {
 
 const EditQuestionPage = () => {
   const router = useRouter();
-  const { token } = useContext(AuthContext);
+  const { data: session } = useSession();
+  const token = session && session.user;
 
   const [currentQuestionId, setCurrentQuestionId] = useState<string | null>(
     null
@@ -33,7 +35,6 @@ const EditQuestionPage = () => {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        authorization: token as string,
       },
     });
     return result.json();
@@ -78,7 +79,6 @@ const EditQuestionPage = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            authorization: token as string,
           },
           body: JSON.stringify(values),
         });
@@ -111,7 +111,6 @@ const EditQuestionPage = () => {
             method: "PATCH",
             headers: {
               "Content-Type": "application/json",
-              authorization: token as string,
             },
             body: JSON.stringify(values),
           }

@@ -1,10 +1,10 @@
 import { FormEvent, useContext, useRef } from "react";
-import { AuthContext } from "../_app";
 import router from "next/router";
 import { Field, Form, Formik } from "formik";
+import { useSession } from "next-auth/react";
 
 const CreateQuiz = () => {
-  const { token } = useContext(AuthContext);
+  const { data: session } = useSession();
 
   const initialValues = {
     title: "",
@@ -20,7 +20,6 @@ const CreateQuiz = () => {
         body: JSON.stringify(values),
         headers: {
           "Content-Type": "application/json",
-          authorization: token as string,
         },
       });
       if (result.ok) {

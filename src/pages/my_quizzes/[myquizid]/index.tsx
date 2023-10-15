@@ -1,13 +1,13 @@
-import { AuthContext } from "@/pages/_app";
 import useSWR from "swr";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useContext } from "react";
 import { QuizByIdResponse } from "@/services/quiz/types";
+import { useSession } from "next-auth/react";
 
 const MyQuizPage = () => {
   const router = useRouter();
-  const { token } = useContext(AuthContext);
+  const { data: session } = useSession();
+  const token = session && session.user;
 
   const getMyQuiz = async () => {
     const result = await fetch(
@@ -16,7 +16,6 @@ const MyQuizPage = () => {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          authorization: token as string,
         },
       }
     );
@@ -40,7 +39,6 @@ const MyQuizPage = () => {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
-          authorization: token as string,
         },
         body: JSON.stringify({ status: status }),
       });

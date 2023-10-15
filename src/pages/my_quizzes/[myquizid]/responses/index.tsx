@@ -1,9 +1,8 @@
 import Loading from "@/components/Loading/Loading";
 import { ResponseModelWIthId } from "@/models/response";
-import { AuthContext } from "@/pages/_app";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useContext } from "react";
 import useSWR from "swr";
 
 interface MyQuizResponsesRequestResponse
@@ -19,14 +18,15 @@ interface MyQuizResponsesType {
 
 const ResponsesToMyQuiz = () => {
   const router = useRouter();
-  const { token } = useContext(AuthContext);
+  const { data: session } = useSession();
+  const token = session && session.user;
+  
 
   const getQuizResponses = async () => {
     const result = await fetch(`/api/response_quiz/${router.query.myquizid}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        authorization: token as string,
       },
     });
     return result.json();

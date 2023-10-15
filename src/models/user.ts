@@ -8,7 +8,7 @@ export interface UserModel {
 
 const userSchema = new Schema<UserModel>({
   email: { type: String, required: true, unique: true },
-  password: { type: String, required: true, minlength: 6 },
+  password: { type: String },
   name: { type: String },
 });
 

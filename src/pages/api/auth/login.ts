@@ -82,6 +82,7 @@ async function handler(
     data: {
       id: existingUser.id.toString(),
       email: existingUser.email,
+      name: existingUser.name,
       token: `Bearer ${token}`,
     },
     error: null,

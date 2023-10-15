@@ -1,8 +1,8 @@
 import User from "@/models/user";
-import { hashPassword, verifyToken } from "@/services/auth/auth";
+import { hashPassword } from "@/services/auth/auth";
 import { connectToDatabase } from "@/services/database.service";
-import { IUserToken } from "@/services/auth/types";
 import type { NextApiRequest, NextApiResponse } from "next";
+import { getToken } from "next-auth/jwt";
 
 async function handler(req: NextApiRequest, res: NextApiResponse<unknown>) {
   if (req.method !== "POST") {
@@ -14,17 +14,19 @@ async function handler(req: NextApiRequest, res: NextApiResponse<unknown>) {
     newPassword,
   }: { oldPassword: string; newPassword: string } = req.body;
 
-  const token = req?.headers?.authorization?.split(" ")[1];
-
-  const decodedToken = await verifyToken(token || "");
-
-  const userId = (decodedToken as IUserToken).id;
+  const tokenServer = await getToken({
+    req,
+    secret: process.env.ACCESS_TOKEN_SECRET,
+  });
+  if(!tokenServer?.user) {
+    return res.status(401);
+  }
 
   await connectToDatabase();
 
   let existingUser;
   try {
-    existingUser = await User.findById(userId);
+    existingUser = await User.findOne({ email: tokenServer?.user?.email ?? "" });
   } catch (err) {
     return res.status(500).json({
       error: {

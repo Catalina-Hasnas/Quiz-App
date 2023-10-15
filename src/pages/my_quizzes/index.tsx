@@ -1,10 +1,9 @@
 import Link from "next/link";
 import useSWR from "swr";
-import { useContext } from "react";
 import { QuizModelWithId } from "@/models/quiz";
-import { AuthContext } from "@/pages/_app";
 import { ResponseModelWIthId } from "@/models/response";
 import Loading from "@/components/Loading/Loading";
+import { useSession } from "next-auth/react";
 
 type ResponseType = Pick<ResponseModelWIthId, "_id" | "reviewed"> & {
   quiz_title: string;
@@ -18,22 +17,21 @@ interface MyQuizzesResponse {
 }
 
 const MyQuizzesPage = () => {
-  const { token } = useContext(AuthContext);
+  const { data: session } = useSession();
 
   const getMyQuizzes = async () => {
     const result = await fetch("/api/my_quizzes", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        authorization: token as string,
       },
     });
     return result.json();
   };
 
   const { data, isLoading, error } = useSWR<MyQuizzesResponse>(
-    token ? ["/api/my_quizzes"] : null,
-    token ? getMyQuizzes : null
+    session && session.user ? ["/api/my_quizzes"] : null,
+    session && session.user ? getMyQuizzes : null
   );
 
   if (isLoading) {

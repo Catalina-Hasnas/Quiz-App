@@ -1,9 +1,8 @@
 import Quiz from "@/models/quiz";
 import User from "@/models/user";
-import { verifyToken } from "@/services/auth/auth";
-import { IUserToken } from "@/services/auth/types";
 import { connectToDatabase } from "@/services/database.service";
 import type { NextApiRequest, NextApiResponse } from "next";
+import { getToken } from "next-auth/jwt";
 
 async function handler(req: NextApiRequest, res: NextApiResponse<unknown>) {
   const quizId = req.query.id;
@@ -11,17 +10,18 @@ async function handler(req: NextApiRequest, res: NextApiResponse<unknown>) {
   const filter = req.query.filter;
 
   if (filter) {
-    const token = req?.headers?.authorization?.split(" ")[1];
-
-    const decodedToken = await verifyToken(token || "");
-
-    const userId = (decodedToken as IUserToken).id;
+    const tokenServer = await getToken({
+      req,
+      secret: process.env.ACCESS_TOKEN_SECRET,
+    });
 
     await connectToDatabase();
 
     let existingUser;
     try {
-      existingUser = await User.findById(userId);
+      existingUser = await User.findOne({
+        email: tokenServer?.user?.email ?? "",
+      });
     } catch (err) {
       return res.status(500).json({
         error: {
