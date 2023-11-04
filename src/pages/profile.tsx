@@ -1,11 +1,11 @@
 import { updateUserPassword } from "@/services/auth/auth";
 import { useRouter } from "next/router";
-import { FormEvent, useContext, useRef } from "react";
-import { AuthContext } from "./_app";
+import { FormEvent, useRef } from "react";
+import { useSession } from "next-auth/react";
 
 function ProfilePage() {
   const router = useRouter();
-  const { token } = useContext(AuthContext);
+  const { data: session } = useSession();
   const oldPassRef = useRef<HTMLInputElement>(null);
   const newPassRef = useRef<HTMLInputElement>(null);
 
@@ -19,7 +19,7 @@ function ProfilePage() {
       const updateUserResponse = await updateUserPassword(
         oldPass,
         newPass,
-        token as string
+        session?.user?.token as string
       );
       if (updateUserResponse.ok) {
         const data = await updateUserResponse.json();
@@ -34,7 +34,7 @@ function ProfilePage() {
     }
   };
 
-  if (!token) {
+  if (!session?.user) {
     return <div className="warning rad-shadow m-y-2 p-2 p-x-3 font-size-m text-align-center"> Please sign in in order to view this page </div>;
   }
 

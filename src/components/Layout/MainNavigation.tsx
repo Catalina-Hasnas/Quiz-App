@@ -1,9 +1,9 @@
-import { AuthContext } from "@/pages/_app";
+import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
-import { useContext, useState } from "react";
+import { useState } from "react";
 
 const MainNavigation = () => {
-  const { removeUserInfoFromLocalStorage, token } = useContext(AuthContext);
+  const { data: session } = useSession();
 
   const [isOpen, setOpen] = useState(false);
 
@@ -20,7 +20,7 @@ const MainNavigation = () => {
           <li>
             <Link href="/quizzes/page/1">Home</Link>
           </li>
-          {!token && (
+          {!(session && session.user) && (
             <li>
               <Link href="/auth">Login</Link>
             </li>
@@ -28,7 +28,7 @@ const MainNavigation = () => {
           <li>
             <Link href="/edit_quiz">Create quiz</Link>
           </li>
-          {token && (
+          {session && session.user && (
             <>
               <li>
                 <Link href="/profile">Profile</Link>
@@ -36,7 +36,7 @@ const MainNavigation = () => {
               <li>
                 <button
                   className="font-size-m font-weight-600 text-1 btn-link  "
-                  onClick={() => removeUserInfoFromLocalStorage()}
+                  onClick={() => signOut()}
                 >
                   Logout
                 </button>

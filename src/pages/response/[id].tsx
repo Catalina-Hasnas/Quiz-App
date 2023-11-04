@@ -1,14 +1,14 @@
 import { QuizModelWithId } from "@/models/quiz";
 import { useRouter } from "next/router";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Sidebar from "@/components/Sidebar/Sidebar";
 import { Field, Form, Formik } from "formik";
-import { AuthContext } from "@/pages/_app";
 import QuestionForm from "@/components/Forms/QuestionForm";
 import CreateResponseOptionForm from "@/components/Forms/CreateResponseOptionForm";
 import { ResponseModelWIthId } from "@/models/response";
 import useSWR from "swr";
 import Loading from "@/components/Loading/Loading";
+import { useSession } from "next-auth/react";
 
 export interface ResponseInitialValues {
   answers: QuizModelWithId["questions"];
@@ -31,14 +31,14 @@ interface ResponseDataType {
 const ResponsePage = () => {
   const router = useRouter();
 
-  const { token } = useContext(AuthContext);
+  const { data: session } = useSession();
+  const token = session && session.user;
 
   const getResponseById = async () => {
     const result = await fetch(`/api/response/${router.query.id}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        authorization: token as string,
       },
     });
     return result.json();

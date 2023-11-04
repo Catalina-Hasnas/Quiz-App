@@ -1,27 +1,27 @@
-import { QuestionModelWithId } from "@/models/question";
 import Quiz from "@/models/quiz";
 import Response from "@/models/response";
 import User from "@/models/user";
-import { verifyToken } from "@/services/auth/auth";
-import { IUserToken } from "@/services/auth/types";
 import { connectToDatabase } from "@/services/database.service";
 import mongoose from "mongoose";
 import type { NextApiRequest, NextApiResponse } from "next";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "../auth/[...nextauth]";
 
 async function handler(req: NextApiRequest, res: NextApiResponse<unknown>) {
   const quizId = req.query.quizId;
 
-  const token = req?.headers?.authorization?.split(" ")[1];
-
-  const decodedToken = await verifyToken(token || "");
-
-  const userId = (decodedToken as IUserToken).id;
+  const session = await getServerSession(req, res, authOptions);
+  if (!session?.user) {
+    return res.status(401).json({
+      error: "You're not authorized.",
+    });
+  }
 
   await connectToDatabase();
 
   let existingUser;
   try {
-    existingUser = await User.findById(userId);
+    existingUser = await User.findOne({ email: session.user.email });
   } catch (err) {
     return res.status(500).json({
       error: {
@@ -58,7 +58,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<unknown>) {
     const newResponse = new Response({
       quiz_id: existingQuiz._id as string,
       answers: req.body.answers,
-      respondent_id: userId,
+      respondent_id: existingUser._id,
       reviewed: false,
     });
 

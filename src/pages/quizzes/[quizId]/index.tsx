@@ -3,13 +3,13 @@ import { connectToDatabase } from "@/services/database.service";
 import { GetStaticPropsResult } from "next";
 import { useRouter } from "next/router";
 import { QuestionModel } from "@/models/question";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import Sidebar from "@/components/Sidebar/Sidebar";
 import { Field, FieldProps, Form, Formik } from "formik";
-import { AuthContext } from "@/pages/_app";
 import QuestionForm from "@/components/Forms/QuestionForm";
 import CreateResponseOptionForm from "@/components/Forms/CreateResponseOptionForm";
 import Loading from "@/components/Loading/Loading";
+import { useSession } from "next-auth/react";
 
 interface QuizPageProps {
   data: QuizModelWithId;
@@ -22,7 +22,8 @@ export interface ResponseInitialValues {
 const QuizPage = ({ data }: QuizPageProps) => {
   const router = useRouter();
 
-  const { token } = useContext(AuthContext);
+  const { data: session } = useSession();
+  const token = session && session.user;
 
   const [currentQuestionId, setCurrentQuestionId] = useState<string | null>(
     data?.questions?.[0]?._id || null
@@ -43,7 +44,6 @@ const QuizPage = ({ data }: QuizPageProps) => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          authorization: token as string,
         },
         body: JSON.stringify(values),
       });

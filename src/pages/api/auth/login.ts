@@ -37,6 +37,21 @@ async function handler(
     });
   }
 
+  if (
+    !email ||
+    !email.includes("@") ||
+    !password ||
+    password.trim().length < 6
+  ) {
+    return res.status(422).json({
+      data: null,
+      error: {
+        message:
+          "Invalid input. Password should also be at least 7 characters long. Email should contain @.",
+      },
+    });
+  }
+
   let isValidPassword = false;
 
   try {
@@ -82,6 +97,7 @@ async function handler(
     data: {
       id: existingUser.id.toString(),
       email: existingUser.email,
+      name: existingUser.name,
       token: `Bearer ${token}`,
     },
     error: null,
